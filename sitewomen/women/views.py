@@ -19,12 +19,37 @@ from django.urls import reverse
 # render_to_string  позволяет работать с шаблонами (не рекомендуеться)
 from django.template.loader import render_to_string
 
+menu = ["О сайте", "Добавить Статью", "Обратная связь", "Войти"]
+
+
+class MyClass:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
 
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 def index(request):
     # t = render_to_string("women/index.html")
     # return HttpResponse(t)
-    return render(request, "women/index.html")
+    data = {
+        "title": "Главная Страница",
+        "menu": menu,
+        "float": 28.56,
+        "lst": [1, 2.3, True, "abc"],
+        "set": {1, 2, 3, 2, 5},
+        "dict": {"key1": "value_1", "key2": "value_2"},
+        "obj": MyClass(10, 20),
+    }
+    # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
+    return render(request, "women/index.html", context=data)
+
+
+def about(request):
+    data = {
+        "title": "Страница About",
+    }
+    return render(request, "women/about.html", data)
 
 
 def categories(request, cat_id):
@@ -45,16 +70,13 @@ def archive(request, year):
 
         # reverse записывает путь в переменую, также указывает аргументы для пути URL
         uri = reverse("cats", args=("music",))
+
         # перенаправление на страницу по указаному URL , если if возвращает True
         # permanent=True код состояние 302, а если False код состояние 301 (постоянное перемищение)
-
         # return redirect(uri, permanent=False) == HttpResponseRedirect(uri)
         return redirect(uri, permanent=True)  # == HttpResponsePermanentRedirect(uri)
 
     return HttpResponse(f"<h1>Статьи по категориям</h1><p>This year -> {year}</p>")
-
-def about(request):
-    return render(request,"women/about.html")
 
 
 def page_not_found(request, exception):
