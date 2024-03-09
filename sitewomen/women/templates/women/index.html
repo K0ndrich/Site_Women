@@ -3,17 +3,19 @@
 
 <head>
     <meta charset="utf-8">
-    <title>{{title}}</title>
+    <title>{{main_title | default:"hello"}}</title>
 </head>
 
 <body>
-    <p>{{menu}}</p>
-    <p>{{float}}</p>
+    <p>{{menu| length}}</p>
+    <p>{{float | divisibleby:"3"}}</p>
     <p>{{lst}}</p>
     <p>{{set}}</p>
     <p>{{dict.key1}}</p>
     <p>{{obj.a}}</p>
-    <h1>{{title}}</h1>
+    <h1>{{title|cut:"с"}}</h1>
+    <h2>{{"New York Time"|slugify}}</h2>
+    <h3>{{url}}</h3>
 </body>
 
 </html>

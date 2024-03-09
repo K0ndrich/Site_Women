@@ -18,6 +18,9 @@ from django.urls import reverse
 
 # render_to_string  позволяет работать с шаблонами (не рекомендуеться)
 from django.template.loader import render_to_string
+# подключение фильтра шаблона как отдельную функцию
+# slugify - конвертирует теккс в тип данных slugy
+from django.template.defaultfilters import slugify
 
 menu = ["О сайте", "Добавить Статью", "Обратная связь", "Войти"]
 
@@ -33,13 +36,14 @@ def index(request):
     # t = render_to_string("women/index.html")
     # return HttpResponse(t)
     data = {
-        "title": "Главная Страница",
+        "title": "главная страница",
         "menu": menu,
         "float": 28.56,
         "lst": [1, 2.3, True, "abc"],
         "set": {1, 2, 3, 2, 5},
         "dict": {"key1": "value_1", "key2": "value_2"},
         "obj": MyClass(10, 20),
+        "url": slugify("the main page"),
     }
     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
     return render(request, "women/index.html", context=data)
