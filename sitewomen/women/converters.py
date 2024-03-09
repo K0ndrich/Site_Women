@@ -4,7 +4,7 @@ class FourDigitYearConverter:
 
     # преобразовывает в тип int
     def to_python(self, value):
-        return str(value)
+        return int(value)
 
     def to_url(self, value):
         return "%04d" % value
