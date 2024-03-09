@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-xx3$)(x8a^=!+=h#6=$-ud5^1jz7gjt7xv(%%39%&z+=krfdh5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG режим сайта.При ненахождении URL адресса , если True тогда показивает странице не найдена
-# При ненахождении URL адресса , если False тогда не подключеться к странице
+# DEBUG режим сайта.При ненахождении URL адресса , если True не позволяет выкинуть ошибку 404
+# При ненахождении URL адресса , если False повзволяет выкинуть ошибку 404
 
 DEBUG = False
 
@@ -57,10 +57,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "sitewomen.urls"
 
+# настройка для шаблонизатора
 TEMPLATES = [
     {
+        # указываем имя для шаблонизатора
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # повзлояет прописывать  пути для файлов шаблонов
+        "DIRS": [BASE_DIR / "women" / "templates"],
+        # True - ищет по умолчанию шаблоны в sitewomen/women/templates/women/index.html
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
