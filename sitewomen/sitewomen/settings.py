@@ -23,9 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-xx3$)(x8a^=!+=h#6=$-ud5^1jz7gjt7xv(%%39%&z+=krfdh5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# При ненахождении URL адресса , если True тогда показивает странице не найдена
+# При ненахождении URL адресса , если False тогда не покдлючеться к странице
 
-ALLOWED_HOSTS = []
+DEBUG = False
+
+# разрешенные host адреса , указываем наш локальный host
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition

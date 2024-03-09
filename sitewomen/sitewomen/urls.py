@@ -16,12 +16,15 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from women.views import index
+from django.urls import path, include
+from women.views import page_not_found
 
 # просписывает главные пути URL на сайте
 urlpatterns = [
-    path("admin/", admin.site.urls),
     # path - указивает путь url , index - название функции которая будет вызиваться
-    path("women/", index),  # http://127.0.0.1:8000/women
+    path("admin/", admin.site.urls),
+    # берет url из самого приложения (из указаного в второго файла) http://127.0.0.1:8000/
+    path("women/", include("women.urls")),
 ]
+# при ненахождении URL адресса будет вызывать реализованое нами представление page_not_found
+handler404 = page_not_found
