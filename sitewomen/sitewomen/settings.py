@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-xx3$)(x8a^=!+=h#6=$-ud5^1jz7gjt7xv(%%39%&z+=krfdh5
 # DEBUG режим сайта.При ненахождении URL адресса , если True не позволяет выкинуть ошибку 404
 # При ненахождении URL адресса , если False повзволяет выкинуть ошибку 404
 
-DEBUG = False
+DEBUG = True
 
 # разрешенные host адреса , указываем наш локальный host
 ALLOWED_HOSTS = ["127.0.0.1"]
@@ -129,8 +129,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 # содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
 # STATIC_ROOT = ""
-# содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку указаную више
-# STATICFILES_DIRS = ""
+# содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку STATIC_ROOT указаную више
+# STATICFILES_DIRS = [BASE_DIR / "sitewomen" / "static /"]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
