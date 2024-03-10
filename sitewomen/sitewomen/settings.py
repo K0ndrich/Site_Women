@@ -63,7 +63,7 @@ TEMPLATES = [
         # указываем имя для шаблонизатора
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # повзлояет прописывать  пути для файлов шаблонов
-        "DIRS": [BASE_DIR / "women" / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         # True - ищет по умолчанию шаблоны в sitewomen/women/templates/women/index.html
         "APP_DIRS": True,
         "OPTIONS": {

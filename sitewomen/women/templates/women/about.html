@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>{{title}}</title>
-</head>
-
-<body>
-    <p>{{menu}}</p>
-
-    <h1>{{title}}</h1>
-</body>
-
-</html>
+<!-- розширеяем базовый шаблон -->
+{%extends "base.html"%}
+<!-- перемещаеться указаний ниже функционал в block, который лежит в базовом классе -->
+{%block content%}
+<h1>{{title}}</h1>
+{%endblock%}

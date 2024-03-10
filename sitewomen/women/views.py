@@ -60,7 +60,7 @@ def about(request):
     data = {
         "title": "Страница About",
     }
-    return render(request, "women/about.html", data)
+    return render(request, "women/about.html", {"title": "О сайте", "menu": menu})
 
 
 def showpost(request, post_id):

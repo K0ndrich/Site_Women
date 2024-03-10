@@ -1,38 +1,28 @@
-<!DOCTYPE html>
-<html>
+{%extends "base.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{{main_title | default:"hello"}}</title>
-</head>
-
-<body>
-
-    <ul>
-        <li><a href="{% url 'home'%}">Главная Страница</a></li>
-        {% for m in menu%}
-        {%if not forloop.last%}<li>{%else%}
-        <li class="last">{%endif%}
-            <a href="{%url m.url_name %}">{{m.title}}</a>
-        </li>
-        {%endfor%}
-    </ul>
-    <h1>{{title}}</h1>
-    <ul>
-        {% for p in posts%}
-        {% if p.is_published%}
-        <li>
-            <h2>{{p.title}}</h2>
-            <p>{{p.content}}</p>
-            <p><a href="{% url 'post' p.id %}">Читать Пост</a></p>
-            {%if not forloop.last%}
-            <hr>
-            {% endif %}
-
-        </li>
+{%block content%}
+<h1>{{title}}</h1>
+<!-- включаем файл который лежит в указаной диретории, слово only запрещает передачу переменных из views етого файла в включаемый файл -->
+<!-- слово with можна перекадваю переменные с указаными значениями -->
+{% include "women/includes/nav.html" only with title2="111" %}
+<ul>
+    {% for p in posts%}
+    {% if p.is_published%}
+    <li>
+        <h2>{{p.title}}</h2>
+        <p>{{p.content}}</p>
+        <p><a href="{% url 'post' p.id %}">Читать Пост</a></p>
+        {%if not forloop.last%}
+        <hr>
         {% endif %}
-        {% endfor %}
-    </ul>
-</body>
+
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+{% include "women/includes/nav.html"%}
+
+{%endblock%}
 
 </html>
