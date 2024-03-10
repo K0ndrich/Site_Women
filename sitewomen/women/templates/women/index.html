@@ -2,9 +2,6 @@
 
 {%block content%}
 <h1>{{title}}</h1>
-<!-- включаем файл который лежит в указаной диретории, слово only запрещает передачу переменных из views етого файла в включаемый файл -->
-<!-- слово with можна перекадваю переменные с указаными значениями -->
-{% include "women/includes/nav.html" only with title2="111" %}
 <ul>
     {% for p in posts%}
     {% if p.is_published%}
@@ -21,7 +18,6 @@
     {% endfor %}
 </ul>
 
-{% include "women/includes/nav.html"%}
 
 {%endblock%}
 

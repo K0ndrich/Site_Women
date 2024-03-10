@@ -1,9 +1,14 @@
+<!-- возможность покдключать стили css -->
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="utf-8">
-    <title>untitled</title>
+    <title>{{title}}</title>
+    <!-- подключение css -->
+    <link type="text/css" href="{% static 'women/css/styles.css' %}" rel="stylesheet">
 </head>
 
 <body>

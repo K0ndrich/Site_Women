@@ -128,9 +128,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 # содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
-STATIC_ROOT = ""
+# STATIC_ROOT = ""
 # содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку указаную више
-STATICFILES_DIRS = ""
+# STATICFILES_DIRS = ""
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
