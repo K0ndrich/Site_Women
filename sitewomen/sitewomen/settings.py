@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    # позволяет подключать статические файлы к проекту
     "django.contrib.staticfiles",
     # регистрация созданого приложения с названием women. Путь ->  women/apps/WomenConfig
     "women.apps.WomenConfig",
@@ -126,7 +127,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-
+# содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
+STATIC_ROOT = ""
+# содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку указаную више
+STATICFILES_DIRS = ""
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
