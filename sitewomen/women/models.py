@@ -12,4 +12,8 @@ class Women(models.Model):
     # записивыет значение при изменении поля
     time_update = models.DateTimeField(auto_now=True)
     # тип данных bool. default записывает указаное значание, если сами его не передаем
-    is_publisher = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=True)
+
+    # отображение при Women.objects.all()
+    def __str__(self):
+        return self.title
