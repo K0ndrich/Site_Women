@@ -86,7 +86,9 @@ WSGI_APPLICATION = "sitewomen.wsgi.application"
 
 DATABASES = {
     "default": {
+        # драйвер для взаемодействия с базой данных
         "ENGINE": "django.db.backends.sqlite3",
+        # разположение базы данных в проекте
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }

@@ -4,7 +4,7 @@ from women import views
 register = template.Library()
 
 
-# простой тег для шаблонов
+# простой тег для шаблонов в html файлах
 @register.simple_tag
 def get_cetegories():
     return views.cats_db

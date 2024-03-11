@@ -1,3 +1,4 @@
+<!-- унаследует шаблон от базового класса base.hmtl -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -6,6 +7,7 @@
     {% if p.is_published %}
     <li>
         <h2>{{p.title}}</h2>
+        <!-- отключает екраниерование тегов hmtl на странице -->
         {% autoescape off %}
         {{p.content | linebreaks |truncatewords:40 }}
         {% endautoescape %}
