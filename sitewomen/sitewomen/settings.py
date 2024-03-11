@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # регистрация созданого приложения с названием women. Путь ->  women/apps/WomenConfig
     "women.apps.WomenConfig",
+    # добавление сторонего пакета с разширениями
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
