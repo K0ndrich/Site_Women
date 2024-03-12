@@ -52,7 +52,7 @@ class Women(models.Model):
     # CASCADE - при удаление записи Category удалеться и запись в Women
     # PROTECT - запрещает удаление записи в Category, если запись ссылаеться на Women
     # related_name - указывает названия для менеджера записей для Category
-    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
+    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts" )
 
     # отображение при print(запись в базе)
     def __str__(self):
@@ -77,7 +77,11 @@ class Women(models.Model):
 # при удаление значений записи в Сategory возможно удаление записи в Women
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
-    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+    slug = models.SlugField(max_length=255, unique=False, db_index=True)
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        # self.slug - беретьcя значение колонки slug из записи в базе данных
+        return reverse("category", kwargs={"cat_slug": self.slug})

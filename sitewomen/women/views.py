@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # reverse записивает в переменую путь с передачей аргументов
 from django.urls import reverse
 
-from women.models import Women
+from women.models import Women, Category
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -45,12 +45,6 @@ data_db = [
     },
 ]
 
-cats_db = [
-    {"id": 1, "name": "Актрисы"},
-    {"id": 2, "name": "Певици"},
-    {"id": 3, "name": "Спортсменки"},
-]
-
 
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 def index(request):
@@ -74,7 +68,7 @@ def about(request):
 
 
 def showpost(request, post_slug):
-    # функция get_object_or_404 либо возвращает обьека по указаным параметрам из модели либо ошибку 404
+    # функция get_object_or_404 либо возвращает обькт по указаным параметрам из модели либо ошибку 404
     post = get_object_or_404(Women, slug=post_slug)
     data = {
         "title": post.title,
@@ -97,12 +91,14 @@ def login(request):
     return HttpResponse("Авторизация")
 
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category.pk)
     data = {
-        "title": "Отображение по рубрикам",
+        "title": f"Рубрика: {category.name}",
         "menu": menu,
-        "posts": data_db,
-        "cat_selected": cat_id,
+        "posts": posts,
+        "cat_selected": category.pk,
     }
     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
     return render(request, "women/index.html", context=data)
