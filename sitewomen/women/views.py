@@ -9,10 +9,12 @@ from django.http import (
 
 # redirect перенаправляет на другую страницу с другим url
 # render позволяет работать с шаблонами и отправлять на страницу
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # reverse записивает в переменую путь с передачей аргументов
 from django.urls import reverse
+
+from women.models import Women
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -71,8 +73,16 @@ def about(request):
     return render(request, "women/about.html", {"title": "О сайте", "menu": menu})
 
 
-def showpost(request, post_id):
-    return HttpResponse(f"Отображение Статьи с ID -> {post_id}")
+def showpost(request, post_slug):
+    # функция get_object_or_404 либо возвращает обьека по указаным параметрам из модели либо ошибку 404
+    post = get_object_or_404(Women, slug=post_slug)
+    data = {
+        "title": post.title,
+        "menu": menu,
+        "post": post,
+        "cat_selected": 1,
+    }
+    return render(request, "women/post.html", data)
 
 
 def addpage(request):
