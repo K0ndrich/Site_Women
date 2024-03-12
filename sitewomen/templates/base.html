@@ -45,6 +45,7 @@
                                 {%else%}
                                 <li><a href="{% url 'home' %}">Все категории</a></li>
                                 {%endif%}
+                                <!-- вызываем включающийся тег , передаем ему переменую cat_selected -->
                                 {% show_categories cat_selected%}
                                 <li class="share">
                                     <p>Наш канал</p>
