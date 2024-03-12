@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 
-# определение класа ,который переопределяет objects (Women.objects)
+# менеджер записей -> определение класа , который переопределяет objects (Women.objects)
 # После создания класса базовый менеджер нельзя использовать етот класс присваиваеться в классе Women
 class PublishedManager(models.Manager):
     # функция опеределяет что будет возвращать Women.published.all()
@@ -11,10 +11,10 @@ class PublishedManager(models.Manager):
         return super().get_queryset().filter(is_published=Women.Status.PUBLISHED)
 
 
-# создание таблици базы данных. Именно наследование от models.Model ето делает
+# создание таблици (модели) базы данных. Именно наследование от models.Model ето делает
 class Women(models.Model):
 
-    # сопоставлениния переопредиление значений в текстовые названия , можем использовать ети переменные вместо значений
+    # сопоставления - переопредиление значений в текстовые названия , можем использовать ети переменные вместо значений
     class Status(models.IntegerChoices):
         DRAFT = 0, "Черновик"
         PUBLISHED = 1, "Опубликовано"
@@ -47,14 +47,20 @@ class Women(models.Model):
     # даем название менеджеру класса
     published = PublishedManager()
 
+    # создаеться новая колонка, которая соответствует колонке в таблице Category -> отношение многи к одному
+    # Category - указывает на какую таблицу(модель) будем ссылаться
+    # CASCADE - при удаление записи Category удалеться и запись в Women
+    # PROTECT - запрещает удаление записи в Category, если запись ссылаеться на Women
+    # related_name - указывает названия для менеджера записей для Category
+    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
+
     # отображение при print(запись в базе)
     def __str__(self):
         return self.title
 
     # класс в котором переопряделяються сортировки базы данных
     class Meta:
-        # переопредиление Women.objects.order_by() , выполнение по умолчанию
-        # сортирровка при получении списка записей базы данных
+        # при получении списка с записями базы данных вывод сортировать по значению колонки time_create
         ordering = ["-time_create"]
         # устанавливаем индексирования для указаного поля -> ускоряеться поиск записей в базе
         indexes = [
@@ -62,5 +68,16 @@ class Women(models.Model):
         ]
 
     # создание адресса url для каждой записи в базе (екзепляри класса Women)
+    # post - ето name из urls
     def get_absolute_url(self):
         return reverse("post", kwargs={"post_slug": self.slug})
+
+
+# создание второй таблички (модели) -> многие к одному
+# при удаление значений записи в Сategory возможно удаление записи в Women
+class Category(models.Model):
+    name = models.CharField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        return self.name
