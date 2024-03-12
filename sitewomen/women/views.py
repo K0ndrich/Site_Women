@@ -54,12 +54,12 @@ cats_db = [
 
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 def index(request):
-    # t = render_to_string("women/index.html")
-    # return HttpResponse(t)
+    # published - ето свой менеджер, которы переопределено от базового
+    posts = Women.published.all()
     data = {
         "title": "Главная Страница",
         "menu": menu,
-        "posts": data_db,
+        "posts": posts,
         "cat_selected": 0,
     }
     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
