@@ -52,7 +52,10 @@ class Women(models.Model):
     # CASCADE - при удаление записи Category удалеться и запись в Women
     # PROTECT - запрещает удаление записи в Category, если запись ссылаеться на Women
     # related_name - указывает названия для менеджера записей для Category
-    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts" )
+    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
+
+    # создание отношения многие ко многим
+    tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
 
     # отображение при print(запись в базе)
     def __str__(self):
@@ -85,3 +88,16 @@ class Category(models.Model):
     def get_absolute_url(self):
         # self.slug - беретьcя значение колонки slug из записи в базе данных
         return reverse("category", kwargs={"cat_slug": self.slug})
+
+
+# создание третей таблици для отношения многие ко многим
+class TagPost(models.Model):
+    tag = models.CharField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        return self.tag
+
+    def get_absolute_url(self):
+        return reverse("tag", kwargs={"tag_slug": self.slug})
+

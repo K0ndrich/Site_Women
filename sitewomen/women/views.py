@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # reverse записивает в переменую путь с передачей аргументов
 from django.urls import reverse
 
-from women.models import Women, Category
+from women.models import Women, Category, TagPost
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -101,6 +101,18 @@ def show_category(request, cat_slug):
         "cat_selected": category.pk,
     }
     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
+    return render(request, "women/index.html", context=data)
+
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+    data = {
+        "title": f"Тег:{tag.tag}",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": None,
+    }
     return render(request, "women/index.html", context=data)
 
 
