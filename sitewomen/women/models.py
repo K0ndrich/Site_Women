@@ -57,6 +57,16 @@ class Women(models.Model):
     # создание отношения многие ко многим
     tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
 
+    # создание отношение один к одному
+    # SET_NULL если удалем значения , тогда в таблице Women устанавливаеться значение Null
+    husband = models.OneToOneField(
+        "Husband",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="wuman",
+    )
+
     # отображение при print(запись в базе)
     def __str__(self):
         return self.title
@@ -101,3 +111,10 @@ class TagPost(models.Model):
     def get_absolute_url(self):
         return reverse("tag", kwargs={"tag_slug": self.slug})
 
+
+class Husband(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.IntegerField(null=True)
+
+    def __str__(self):
+        return self.name
