@@ -58,7 +58,7 @@ class Women(models.Model):
     tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
 
     # создание отношение один к одному
-    # SET_NULL если удалем значения , тогда в таблице Women устанавливаеться значение Null
+    # SET_NULL если удалем значения во второй таблице Husband, тогда в таблице Women устанавливаеться значение Null
     husband = models.OneToOneField(
         "Husband",
         on_delete=models.SET_NULL,
