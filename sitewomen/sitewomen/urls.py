@@ -19,12 +19,20 @@ from django.contrib import admin
 from django.urls import path, include
 from women.views import page_not_found
 
+
 # просписывает главные пути URL на сайте
 urlpatterns = [
     # path - указивает путь url , index - название функции которая будет вызиваться
     path("admin/", admin.site.urls),
     # берет url из самого приложения (из указаного в второго файла) http://127.0.0.1:8000/
     path("women/", include("women.urls")),
+    # берез из django debug toolbar
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
 # при ненахождении URL адресса будет вызывать реализованое нами представление page_not_found
 handler404 = page_not_found
+
+# содержит название панели администратора
+admin.site.site_header = "Панель Администрирования"
+# содержит название второго заголовка ниж
+admin.site.index_title = "Извесные Женщины Мира"

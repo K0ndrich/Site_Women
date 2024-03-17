@@ -23,18 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-xx3$)(x8a^=!+=h#6=$-ud5^1jz7gjt7xv(%%39%&z+=krfdh5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 # DEBUG режим сайта.При ненахождении URL адресса , если True не позволяет выкинуть ошибку 404
 # При ненахождении URL адресса , если False повзволяет выкинуть ошибку 404
-
 DEBUG = True
 
 # разрешенные host адреса , указываем наш локальный host
 ALLOWED_HOSTS = ["127.0.0.1"]
+# добавление для django-debug-toolbar
+INTERNAL_IPS = ["127.0.0.1"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # покдлючение админ-панели
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,6 +49,8 @@ INSTALLED_APPS = [
     "women.apps.WomenConfig",
     # добавление сторонего пакета с разширениями
     "django_extensions",
+    # добавление django debug toolbar
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "sitewomen.urls"
@@ -118,7 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+# указываем общий язык для всего нашего проекта
+# LANGUAGE_CODE = "en-us"  - англиский
+LANGUAGE_CODE = "ru-RU"  # - русский
 
 TIME_ZONE = "UTC"
 
@@ -130,11 +138,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+# базовый путь к статическим файлам
 STATIC_URL = "static/"
+
 # содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
 # STATIC_ROOT = ""
+
 # содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку STATIC_ROOT указаную више
 # STATICFILES_DIRS = [BASE_DIR / "sitewomen" / "static /"]
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

@@ -73,8 +73,15 @@ class Women(models.Model):
 
     # класс в котором переопряделяються сортировки базы данных
     class Meta:
+        # verbose_name содержит название для текущей модели(таблици) в панеле администратора в одном числе
+        verbose_name = "Известные Женщины"
+
+        # verbose_name содержит название для текущей модели(таблици) в панеле администратора в множественном числе
+        verbose_name_plural = "Известные Женщины"
+
         # при получении списка с записями базы данных вывод сортировать по значению колонки time_create
         ordering = ["-time_create"]
+
         # устанавливаем индексирования для указаного поля -> ускоряеться поиск записей в базе
         indexes = [
             models.Index(fields=["-time_create"]),
@@ -95,6 +102,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    # метод get_absolute_url также добавляет кнопку смотреть на сайте в админ-панели
     def get_absolute_url(self):
         # category - ето name из urls.py
         # self.slug - беретьcя значение колонки slug из записи в базе данных

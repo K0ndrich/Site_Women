@@ -23,33 +23,14 @@ menu = [
     {"title": "Войти", "url_name": "login"},
 ]
 
-data_db = [
-    {
-        "id": 1,
-        "title": "Анджелина Джоли",
-        "content": """<h1>Анджелина Джоли</h1> (англ. Angelina Jolie[7], при рождении Войт (англ. Voight), ранее Джоли Питт (англ. Jolie Pitt); род. 4 июня 1975, Лос-Анджелес, Калифорния, США) — американская актриса кино, телевидения и озвучивания, кинорежиссёр, сценаристка, продюсер, фотомодель, посол доброй воли ООН.
-        Обладательница премии «Оскар», трёх премий «Золотой глобус» (первая актриса в истории, три года подряд выигравшая премию) и двух «Премий Гильдии киноактёров США».""",
-        "is_published": True,
-    },
-    {
-        "id": 2,
-        "title": "Марго Робби",
-        "content": "Биография Марго Робби",
-        "is_published": False,
-    },
-    {
-        "id": 3,
-        "title": "Джулия Робертс",
-        "content": "Биография Джулия Робертс",
-        "is_published": True,
-    },
-]
-
 
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 def index(request):
     # published - ето свой менеджер, которы переопределено от базового
-    posts = Women.published.all()
+    # select_related - производиться жадная загрузка данных из таблиц по ForeignKey , cat - название колонки связывания с внешней таблицой
+    # prefetch_related - производиться жадная загрузка данных из таблиц только по ManyToMany
+    # жадная загрузка убирает повторение запросов из баззы данных
+    posts = Women.published.all().select_related("cat")
     data = {
         "title": "Главная Страница",
         "menu": menu,
@@ -94,7 +75,7 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk)
+    posts = Women.published.filter(cat_id=category.pk).select_related("cat")
     data = {
         "title": f"Рубрика: {category.name}",
         "menu": menu,
@@ -119,3 +100,4 @@ def show_tag_postlist(request, tag_slug):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница Не Найдена</h1>")
+    
