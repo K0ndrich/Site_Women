@@ -26,11 +26,13 @@ menu = [
 
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 def index(request):
+
     # published - ето свой менеджер, которы переопределено от базового
     # select_related - производиться жадная загрузка данных из таблиц по ForeignKey , cat - название колонки связывания с внешней таблицой
     # prefetch_related - производиться жадная загрузка данных из таблиц только по ManyToMany
     # жадная загрузка убирает повторение запросов из баззы данных
     posts = Women.published.all().select_related("cat")
+
     data = {
         "title": "Главная Страница",
         "menu": menu,
@@ -100,4 +102,3 @@ def show_tag_postlist(request, tag_slug):
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница Не Найдена</h1>")
-    

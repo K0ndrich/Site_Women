@@ -20,29 +20,32 @@ class Women(models.Model):
         PUBLISHED = 1, "Опубликовано"
 
     # создание колонки базы данных. CharField тип данных одна строка
-    title = models.CharField(max_length=255)
+    # verbose_name содержит название которые будет отображаться в админ панели
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
 
     # тип данных slug , unique - содержит только уникальные значения для каждой записи
     # db_index - делает индексирование значения, чтоб быстрее выбирать из базы данных
     slug = models.SlugField(
-        max_length=255,
-        unique=True,
-        db_index=True,
+        max_length=255, unique=True, db_index=True, verbose_name="Slug"
     )
     # тип данных часть текста. blank позволяет при создании записи не передавать в колонку значения
-    content = models.TextField(blank=True)
+    content = models.TextField(blank=True, verbose_name="Текс Статьи")
 
     # тип данных дата. auto_now_add записывает время в колонку при создании записи
-    time_create = models.DateTimeField(auto_now_add=True)
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время Создания")
 
     # записивыет значение при изменении поля
-    time_update = models.DateTimeField(auto_now=True)
+    time_update = models.DateTimeField(auto_now=True, verbose_name="Время Изменения")
 
     # тип данных bool. default записывает указаное значание, если сами его не передаем
     # choices - используем переопредиление имен
-    is_published = models.BooleanField(choices=Status.choices, default=Status.PUBLISHED)
+    is_published = models.BooleanField(
+        choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
+        default=Status.DRAFT,
+        verbose_name="Возможность Публикации",
+    )
 
-    # сохраняем старый менеджер
+    # сохраняем старый менеджер. При создании нового нужно сохранять старый
     objects = models.Manager()
     # даем название менеджеру класса
     published = PublishedManager()
@@ -96,11 +99,15 @@ class Women(models.Model):
 # создание второй таблички (модели) -> многие к одному
 # при удаление значений записи в Сategory возможно удаление записи в Women
 class Category(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name="Имя")
     slug = models.SlugField(max_length=255, unique=False, db_index=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
 
     # метод get_absolute_url также добавляет кнопку смотреть на сайте в админ-панели
     def get_absolute_url(self):
