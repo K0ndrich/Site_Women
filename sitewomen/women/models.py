@@ -81,7 +81,7 @@ class Women(models.Model):
         ]
 
     # создание адресса url для каждой записи в базе (екзепляри класса Women)
-    # post - ето name из urls
+    # post - ето name из urls.py
     def get_absolute_url(self):
         return reverse("post", kwargs={"post_slug": self.slug})
 
@@ -96,6 +96,7 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        # category - ето name из urls.py
         # self.slug - беретьcя значение колонки slug из записи в базе данных
         return reverse("category", kwargs={"cat_slug": self.slug})
 
