@@ -44,7 +44,7 @@ class WomenAdmin(admin.ModelAdmin):
         return f"Описание {len(women.content)} символов"
 
     # request - запрос до базы данных
-    # queryset - набор записей, которы выбрали в админ-панеле
+    # queryset - набор записей, которы выбрали в админ-панеле в квадратике слева
     @admin.action(description="Опубликовать Выбраные Записи")
     def set_published(self, request, queryset):
         count = queryset.update(is_published=Women.Status.PUBLISHED)
