@@ -69,6 +69,7 @@ def about(request):
 
 def showpost(request, post_slug):
     # функция get_object_or_404 либо возвращает обькт по указаным параметрам из модели либо ошибку 404
+    # Women - название модели , slug - название колонки из етой модели
     post = get_object_or_404(Women, slug=post_slug)
     data = {
         "title": post.title,
