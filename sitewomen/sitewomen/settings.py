@@ -138,14 +138,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+
 # базовый путь к статическим файлам
 STATIC_URL = "static/"
 
-# содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
-# STATIC_ROOT = ""
 
 # содержит нестандарные пути для папки static , из которой будут файлы перемещаться в главную папку STATIC_ROOT указаную више
-# STATICFILES_DIRS = [BASE_DIR / "sitewomen" / "static /"]
+# в нашем случае содержит статические файлы для адмни панели
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
+# STATIC_ROOT = ""
 
 
 # Default primary key field type
