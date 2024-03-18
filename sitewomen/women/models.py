@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 # менеджер записей -> определение класа , который переопределяет objects (Women.objects)
@@ -94,6 +95,11 @@ class Women(models.Model):
     # post - ето name из urls.py
     def get_absolute_url(self):
         return reverse("post", kwargs={"post_slug": self.slug})
+
+    # переопредиляем кнопку сохранить в добавлении записи в базу данных
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 # создание второй таблички (модели) -> многие к одному
