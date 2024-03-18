@@ -7,7 +7,7 @@ FROM python:3.12.2
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
 
-# задает рабочую директорию для выполнения команд RUN и CMD
+# задает рабочую текущую локальную директорию для выполнения команд RUN и CMD
 WORKDIR /Projects/My_Site/sitewomen
 
 # копируем файл с зависимостями из локального проекта в doker image
