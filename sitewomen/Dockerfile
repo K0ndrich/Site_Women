@@ -7,19 +7,20 @@ FROM python:3.12.2
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
 
-# задает рабочую текущую локальную директорию для выполнения команд RUN и CMD
-WORKDIR /Projects/My_Site/sitewomen
+# задает рабочую директорию, которая будет находиться внутри контейнера
+WORKDIR /usr/src/sitewomen
 
-# копируем файл с зависимостями из локального проекта в doker image
-COPY ./req.txt /Projects/My_Site/sitewomen/req.txt
+# копируем файл с зависимостями из . - локального проекта в doker image по указаному
+# . - означаел текущий локальный проект
+COPY ./req.txt /usr/src/req.txt
 
-# RUN - выполняет команды, котоыре попадают doker image , еще до запуска контейнера
-# устанавливаем зависимости(стороние библиотеки) для нашего проекта на сервере
-RUN pip install -r /Projects/My_Site/sitewomen/req.txt
+# RUN - выполняет команды внутри doker image , еще до запуска контейнера
+# устанавливаем зависимости(стороние библиотеки) для нашего проекта на сервере из скопированого заранее файла с зависимостями
+RUN pip install -r /usr/src/req.txt
 
-# копируем весь проект в текущую директорию
+# копируем весь . - локальный проект в текущую директорию в doker image
 # . - означает текущая директория на сервере
-COPY . /Projects/My_Site/sitewomen
+COPY . /usr/src/sitewomen
 
 # указываем порт, который будем использовать
 EXPOSE 8000
