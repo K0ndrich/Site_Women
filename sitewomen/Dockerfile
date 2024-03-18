@@ -7,7 +7,7 @@ FROM python:3.12.2
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED=1
 
-# задает рабочую директорию, которая будет находиться внутри контейнера
+# задает рабочую директорию, которая будет находиться внутри DOKER IMAGE
 WORKDIR /usr/src/sitewomen
 
 # копируем файл с зависимостями из . - локального проекта в doker image по указаному
