@@ -16,6 +16,8 @@ from django.urls import reverse
 
 from women.models import Women, Category, TagPost
 
+from .forms import AddPostForm
+
 menu = [
     {"title": "О сайте", "url_name": "about"},
     {"title": "Добавить Статью", "url_name": "add_page"},
@@ -64,14 +66,18 @@ def showpost(request, post_slug):
 
 
 def addpage(request):
-    return render(
-        request,
-        "women/addpage.html",
-        {
-            "menu": menu,
-            "title": "Добавление Статьи",
-        },
-    )
+    if request.method == "POST":
+        # request.POST содержит данные атрибут = значение которые были отправленные на сервер
+        # is_valid проверяет есть ли правильно переданные ВСЕ значения в форму кроме тех кто required=False, возвращает True - False
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
+            print(f"-----------> {form.cleaned_data} <-----------")
+    else:
+        form = AddPostForm()
+
+    data = {"menu": menu, "title": "Добавление Статьи", "form": form}
+    return render(request, "women/addpage.html", data)
 
 
 def contact(request):
