@@ -71,7 +71,7 @@ class Women(models.Model):
         related_name="wuman",
     )
 
-    # отображение при print(запись в базе)
+    # строка для отображения обьекта -> записи базы данных
     def __str__(self):
         return self.title
 
