@@ -4,7 +4,7 @@
 FROM python:3.12.2
 
 # устанавливаем постоянные переменные среды
-ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # задает рабочую директорию, внутри которой будут выполняться инструкции ниже (внутри doker image)

@@ -72,7 +72,15 @@ def addpage(request):
         form = AddPostForm(request.POST)
         if form.is_valid():
             # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
-            print(f"-----------> {form.cleaned_data} <-----------")
+            # print(f"{form.cleaned_data}")
+            try:
+                # создаеться новая запис в базе данных
+                # **form.cleaned_data - данные из формы передаються в виде словаря, нужно розпаковывать
+                Women.objects.create(**form.cleaned_data)
+                return redirect("home")
+            except:
+                # добавление ошибки в список полей non_field_errors в шаблонах
+                form.add_error(None, "Ошибка добавления поста")
     else:
         form = AddPostForm()
 

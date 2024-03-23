@@ -7,21 +7,19 @@
     <!-- при методе POST нужно приписывать csrf_token для защити от атак на сайт -->
     {% csrf_token %}
 
+    <!-- form.non_field_errors содержит ошибки которые не связанные ни с одним полев ввода в форме -->
+    <div class="form-error">{{ form.non_field_errors }}</div>
+    {%for f in form %}
 
-    <!-- label - подсказка в виде тексат для поля input , for указывает id подсказки -->
-    <!-- name указывае параметр куда буде вставляться значения от пользователся при отправке на сервер  -->
-    <!-- все данные будет содержать переменая request в views.py -->
-    <!-- <p><label for="id_1">Текст: </label> <input type="text" id="id_1" name="field_text"></p>
-    <p><label for="id_2">Отметка: </label> <input type="checkbox" id="id_2" name="field_checkbox"></p>
-    <p><label for="id_3">Число:</label> <input type="number" id="id_3" name="field_number"></p>
-    <p><label for="id_4">Пароль: </label> <input type="password" id="id_4" name="field_password"></p> -->
+    <p><label class="form-label" for="{{ f.id_for_label }}">{{f.label}}</label>{{f}}</p>
 
+    <!-- form.title.error поле содержит ошибки для выбраной строки в текущей форме -->
+    <div class="form-error">{{f.errors}}</div>
 
+    {% endfor %}
 
-    <!-- используем пользовательский класс для создания форм из forms.py -->
-    <!-- as_p означает что кадое поле будет выводить в абзаце <p> -->
-    {{form.as_p}}
     <p><button type="submit">Отправить</button></p>
+
 
 </form>
 
