@@ -15,7 +15,7 @@ class PublishedManager(models.Manager):
 # создание таблици (модели) базы данных. Именно наследование от models.Model ето делает
 class Women(models.Model):
 
-    # сопоставления - переопредиление значений в текстовые названия , можем использовать ети переменные вместо значений
+    # список выбора или сопоставление имен
     class Status(models.IntegerChoices):
         DRAFT = 0, "Черновик"
         PUBLISHED = 1, "Опубликовано"
