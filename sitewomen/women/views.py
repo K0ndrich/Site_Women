@@ -68,8 +68,8 @@ def showpost(request, post_slug):
 def addpage(request):
     if request.method == "POST":
         # request.POST содержит данные атрибут = значение которые были отправленные на сервер
-        # is_valid проверяет есть ли правильно переданные ВСЕ значения в форму кроме тех кто required=False, возвращает True - False
         form = AddPostForm(request.POST)
+        # is_valid проверяет соответствуют ли передание значения характеристикам, которые указаны в forms.py
         if form.is_valid():
             # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
             # print(f"{form.cleaned_data}")

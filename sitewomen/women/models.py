@@ -1,6 +1,13 @@
 from django.db import models
+
+# возвращает url адресс
 from django.urls import reverse
+
+# переводит текст в тип slug
 from django.utils.text import slugify
+
+# добавление других валидаторов для проверки значений, которые ввел пользователь
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 
 # менеджер записей -> определение класа , который переопределяет objects (Women.objects)
@@ -21,13 +28,24 @@ class Women(models.Model):
         PUBLISHED = 1, "Опубликовано"
 
     # создание колонки базы данных. CharField тип данных одна строка
-    # verbose_name содержит название которые будет отображаться в админ панели
-    title = models.CharField(max_length=255, verbose_name="Заголовок")
+    title = models.CharField(
+        max_length=255,
+        # verbose_name содержит название которые будет отображаться в админ панели
+        verbose_name="Заголовок",
+        validators=[
+            MinLengthValidator(5, message="Минимум 5 символов"),
+            MaxLengthValidator(100, message="Максимум 100 символов"),
+        ],
+    )
 
-    # тип данных slug , unique - содержит только уникальные значения для каждой записи
-    # db_index - делает индексирование значения, чтоб быстрее выбирать из базы данных
+    # тип данных slug
     slug = models.SlugField(
-        max_length=255, unique=True, db_index=True, verbose_name="Slug"
+        max_length=255,
+        # unique - содержит только уникальные значения для каждой записи
+        unique=True,
+        # db_index - делает индексирование значения, чтоб быстрее выбирать из базы данных
+        db_index=True,
+        verbose_name="Slug",
     )
     # тип данных часть текста. blank позволяет при создании записи не передавать в колонку значения
     content = models.TextField(blank=True, verbose_name="Текс Статьи")
