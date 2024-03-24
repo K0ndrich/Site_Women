@@ -74,10 +74,17 @@ class Women(models.Model):
     # CASCADE - при удаление записи Category удалеться и запись в Women
     # PROTECT - запрещает удаление записи в Category, если запись ссылаеться на Women
     # related_name - указывает названия для менеджера записей для Category
-    cat = models.ForeignKey("Category", on_delete=models.PROTECT, related_name="posts")
+    cat = models.ForeignKey(
+        "Category",
+        on_delete=models.PROTECT,
+        related_name="posts",
+        verbose_name="Категории",
+    )
 
     # создание отношения многие ко многим
-    tags = models.ManyToManyField("TagPost", blank=True, related_name="tags")
+    tags = models.ManyToManyField(
+        "TagPost", blank=True, related_name="tags", verbose_name="Теги"
+    )
 
     # создание отношение один к одному
     # SET_NULL если удалем значения во второй таблице Husband, тогда в таблице Women устанавливаеться значение Null
@@ -87,6 +94,7 @@ class Women(models.Model):
         null=True,
         blank=True,
         related_name="wuman",
+        verbose_name="Муж"
     )
 
     # строка для отображения обьекта -> записи базы данных

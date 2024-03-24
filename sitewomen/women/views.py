@@ -14,9 +14,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 # reverse записивает в переменую путь с передачей аргументов
 from django.urls import reverse
 
-from women.models import Women, Category, TagPost
+from .models import Women, Category, TagPost
 
-from .forms import AddPostForm
+from .forms import AddPostForm, UploadFileForm
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -45,11 +45,34 @@ def index(request):
     return render(request, "women/index.html", context=data)
 
 
+# функция для загрузки файлов от пользователя на сервер (функция взяли из сайта документации)
+# f - ето файл, который передал пользователь
+def handle_uploaded_file(f):
+    # нужно указать путь куда будем сохранять файл + создать папку с первым названием в файла проекта(не приложения)
+    with open(f"uploads/{f.name}", "wb+") as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+
 def about(request):
+    if request.method == "POST":
+        # создание заполненого обьекта формы, которая заполнена колекцией запроса пользователя(request.POST)
+        # и файлом, который отправил пользователь
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+
+            # передаем внутрь функии обьявленой више файл, который отправил пользователь
+            # file ето значение name в классе UploadFileForm в forms.py
+            handle_uploaded_file(form.cleaned_data["file"])
+    else:
+        # создание обьекта формы , который пустой
+        form = UploadFileForm()
     data = {
-        "title": "Страница About",
+        "title": "О сайте",
+        "menu": menu,
+        "form": form,
     }
-    return render(request, "women/about.html", {"title": "О сайте", "menu": menu})
+    return render(request, "women/about.html", data)
 
 
 def showpost(request, post_slug):
@@ -73,14 +96,18 @@ def addpage(request):
         if form.is_valid():
             # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
             # print(f"{form.cleaned_data}")
-            try:
-                # создаеться новая запис в базе данных
-                # **form.cleaned_data - данные из формы передаються в виде словаря, нужно розпаковывать
-                Women.objects.create(**form.cleaned_data)
-                return redirect("home")
-            except:
-                # добавление ошибки в список полей non_field_errors в шаблонах
-                form.add_error(None, "Ошибка добавления поста")
+            # try:
+            #     # создаеться новая запис в базе данных
+            #     # **form.cleaned_data - данные из формы передаються в виде словаря, нужно розпаковывать
+            #     Women.objects.create(**form.cleaned_data)
+            #     return redirect("home")
+            # except:
+            #     # добавление ошибки в список полей non_field_errors в шаблонах
+            #     form.add_error(None, "Ошибка добавления поста")
+
+            # данные записанные пользователем в форме -> записиваються в базу данных Women
+            form.save()
+            return redirect("home")
     else:
         form = AddPostForm()
 
