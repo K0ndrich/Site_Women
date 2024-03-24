@@ -1,27 +1,29 @@
 # Dokerfile - файл хранит сценарий действий для работы с контейнером
 
-# унаследуем основу для нашего Doker Image (Докер Образ)
-FROM python:3.12.2
+# берем docker image(образ) на основе которого будет работать наше приложение
+# python - название , : - версия (у нас последняя)
+FROM buildpack-deps:bookworm
 
 # устанавливаем постоянные переменные среды
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # задает рабочую директорию, внутри которой будут выполняться инструкции ниже  (внутри doker image)
-WORKDIR /usr/src/sitewomen
+WORKDIR /usr/src/app
 
-# копируем файл с зависимостями из . - локального проекта в doker image по указаному
-# . - означаел текущий локальный проект
+# команда COPY копирует файлы
 # COPY откуда(из локального проекта) - куда (в doker image)
-COPY ./sitewomen/req.txt /usr/src/sitewomen/req.txt
+# . - означаел текущий локальный проект
+# копируем файл с зависимостями из . - локального проекта в doker image по указаному
+COPY req.txt ./
 
-# RUN - выполняет команды внутри doker image , еще до запуска контейнера
+# RUN - выполяеться один раз при создании doker image
 # устанавливаем зависимости(стороние библиотеки) для нашего проекта на сервере из скопированого заранее файла с зависимостями req.txt
-RUN pip install -r /usr/src/sitewomen/req.txt
+RUN pip install --no-cache-dir -r req.txt
 
 # копируем весь . - локальный проект в текущую директорию в doker image
 # . - означает текущая локальная директория на сервере
-COPY . /usr/src/sitewomen
+COPY . .
 
 # указываем порт, который будем использовать
 EXPOSE 8000
@@ -29,4 +31,4 @@ EXPOSE 8000
 # CMD - выполняет команды в CMD уже после запуска контейнера
 # запускаем проект на сервере
 # CMD ["python" ,"manage.py", "migrate"]
-# CMD ["python","manage.py","runserver","0.0.0.0:8000"]
+CMD ["python","manage.py","runserver","0.0.0.0:8000"]
