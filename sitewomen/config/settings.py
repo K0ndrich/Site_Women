@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -148,6 +149,9 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+# MEDIA_ROOT указывать путь к медиа файла, которые загрузил пользователь на сайт
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
 
 # содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
 # STATIC_ROOT = ""

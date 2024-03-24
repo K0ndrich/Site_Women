@@ -98,7 +98,16 @@ class AddPostForm(forms.ModelForm):
         # привязиваем форму к модели Women
         model = Women
         # указываем какие поляем берем из модели
-        fields = ["title", "slug", "content", "is_published", "cat", "husband", "tags"]
+        fields = [
+            "title",
+            "slug",
+            "content",
+            "photo",
+            "is_published",
+            "cat",
+            "husband",
+            "tags",
+        ]
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-input"}),
             "content": forms.Textarea(attrs={"cols": 50, "rows": 5}),
@@ -110,11 +119,10 @@ class AddPostForm(forms.ModelForm):
     # clean__название поля к которому применяем валидатор
     def clean_title(self):
         title = self.cleaned_data["title"]
-        ALLOWED_CHARS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯабвгдеёжзийклмнопрстуфхцчшщбыъэюя0123456789- "
-        if not (set(title) <= set(ALLOWED_CHARS)):
-            raise ValidationError(
-                "Должни присутствовать только русские символы, дефис и пробел"
-            )
+        if len(title) > 50:
+            raise ValidationError("Длина превышает 50 символов")
+
+        return title
 
 
 # -----  Класс для создания Форма Для Загрузки Файлов на сервер   -----------------------------------------------------------------------------------------------------------------

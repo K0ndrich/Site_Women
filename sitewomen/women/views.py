@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # reverse записивает в переменую путь с передачей аргументов
 from django.urls import reverse
 
-from .models import Women, Category, TagPost
+from .models import Women, Category, TagPost, UploadFiles
 
 from .forms import AddPostForm, UploadFileForm
 
@@ -45,13 +45,14 @@ def index(request):
     return render(request, "women/index.html", context=data)
 
 
+# НЕ ИСПОЛЬЗУЕМ
 # функция для загрузки файлов от пользователя на сервер (функция взяли из сайта документации)
 # f - ето файл, который передал пользователь
-def handle_uploaded_file(f):
-    # нужно указать путь куда будем сохранять файл + создать папку с первым названием в файла проекта(не приложения)
-    with open(f"uploads/{f.name}", "wb+") as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
+# def handle_uploaded_file(f):
+#     # нужно указать путь куда будем сохранять файл + создать папку с первым названием в файла проекта(не приложения)
+#     with open(f"uploads/{f.name}", "wb+") as destination:
+#         for chunk in f.chunks():
+#             destination.write(chunk)
 
 
 def about(request):
@@ -61,9 +62,15 @@ def about(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
 
+            # НЕ ИСПОЛЬЗУЕМ
             # передаем внутрь функии обьявленой више файл, который отправил пользователь
+            # handle_uploaded_file(form.cleaned_data["file"])
+            # --------------------------------------------------------------------------
+
             # file ето значение name в классе UploadFileForm в forms.py
-            handle_uploaded_file(form.cleaned_data["file"])
+            # создаем запись в модели UploadFiles
+            fp = UploadFiles(file=form.cleaned_data["file"])
+            fp.save()
     else:
         # создание обьекта формы , который пустой
         form = UploadFileForm()
@@ -91,7 +98,7 @@ def showpost(request, post_slug):
 def addpage(request):
     if request.method == "POST":
         # request.POST содержит данные атрибут = значение которые были отправленные на сервер
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         # is_valid проверяет соответствуют ли передание значения характеристикам, которые указаны в forms.py
         if form.is_valid():
             # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
@@ -107,7 +114,7 @@ def addpage(request):
 
             # данные записанные пользователем в форме -> записиваються в базу данных Women
             form.save()
-            return redirect("home")
+            return redirect('home')
     else:
         form = AddPostForm()
 

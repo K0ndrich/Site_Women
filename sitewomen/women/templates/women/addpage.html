@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{title}}</h1>
+<h1>{{ title }}</h1>
 <!-- метод работа с сервероп GET или POST -->
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     <!-- при методе POST нужно приписывать csrf_token для защити от атак на сайт -->
     {% csrf_token %}
 
@@ -14,7 +14,7 @@
     <p><label class="form-label" for="{{ f.id_for_label }}">{{f.label}}</label>{{f}}</p>
 
     <!-- form.title.error поле содержит ошибки для выбраной строки в текущей форме -->
-    <div class="form-error">{{f.errors}}</div>
+    <div class="form-error">{{ f.errors }}</div>
 
     {% endfor %}
 

@@ -28,24 +28,18 @@ class Women(models.Model):
         PUBLISHED = 1, "Опубликовано"
 
     # создание колонки базы данных. CharField тип данных одна строка
-    title = models.CharField(
-        max_length=255,
-        # verbose_name содержит название которые будет отображаться в админ панели
-        verbose_name="Заголовок",
-        validators=[
-            MinLengthValidator(5, message="Минимум 5 символов"),
-            MaxLengthValidator(100, message="Максимум 100 символов"),
-        ],
-    )
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
 
     # тип данных slug
     slug = models.SlugField(
         max_length=255,
-        # unique - содержит только уникальные значения для каждой записи
         unique=True,
-        # db_index - делает индексирование значения, чтоб быстрее выбирать из базы данных
         db_index=True,
         verbose_name="Slug",
+        validators=[
+            MinLengthValidator(5, message="Минимум 5 символов"),
+            MaxLengthValidator(100, message="Максимум 100 символов"),
+        ],
     )
     # тип данных часть текста. blank позволяет при создании записи не передавать в колонку значения
     content = models.TextField(blank=True, verbose_name="Текс Статьи")
@@ -55,6 +49,16 @@ class Women(models.Model):
 
     # записивыет значение при изменении поля
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время Изменения")
+
+    # загрузка фото для поста
+    # %Y/%m/%d/ - загрузка картинок по указаному пути и с указанием года, месяца и дня загрузки
+    photo = models.ImageField(
+        upload_to="photos/%Y/%m/%d/",
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Фото",
+    )
 
     # тип данных bool. default записывает указаное значание, если сами его не передаем
     # choices - используем переопредиление имен
@@ -122,10 +126,10 @@ class Women(models.Model):
     def get_absolute_url(self):
         return reverse("post", kwargs={"post_slug": self.slug})
 
-    # переопредиляем кнопку сохранить в добавлении записи в базу данных
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
+    # переопредиляем сохранение save()
+    # def save(self, *args, **kwargs):
+    #     self.slug = slugify(self.title)
+    #     super().save(*args, **kwargs)
 
 
 # создание второй таблички (модели) -> многие к одному
@@ -167,3 +171,8 @@ class Husband(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UploadFiles(models.Model):
+    # upload_to - указывает, в какую папку будет загружаться теа запись в модели
+    file = models.ImageField(upload_to="uploads")
