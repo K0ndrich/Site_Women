@@ -73,7 +73,7 @@ class Women(models.Model):
     # Category - указывает на какую таблицу(модель) будем ссылаться
     # CASCADE - при удаление записи Category удалеться и запись в Women
     # PROTECT - запрещает удаление записи в Category, если запись ссылаеться на Women
-    # related_name - указывает названия для менеджера записей для Category
+    # related_name - указываем название менеджера обратной связи с моделью Category
     cat = models.ForeignKey(
         "Category",
         on_delete=models.PROTECT,
@@ -94,7 +94,7 @@ class Women(models.Model):
         null=True,
         blank=True,
         related_name="wuman",
-        verbose_name="Муж"
+        verbose_name="Муж",
     )
 
     # строка для отображения обьекта -> записи базы данных
