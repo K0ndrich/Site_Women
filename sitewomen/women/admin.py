@@ -3,6 +3,7 @@ from django.contrib import admin, messages
 # В етом файле регистрируються модели(таблици) в админ-панель
 
 from .models import Women, Category
+from django.utils.safestring import mark_safe
 
 
 # -----   Блок Фильтрации Справа   --------------------------------------------------------------------------------------------------------
@@ -33,11 +34,13 @@ class MarriedFilter(admin.SimpleListFilter):
 class WomenAdmin(admin.ModelAdmin):
 
     # ---   Внутри Формы Редактирования записи из базы данных   --------------------------------------------------------------------------
-    # указываем поля, которые будут отображаться в форме редактирования записи из базы данных
+    # указываем поля, которые будут отображаться в форме редактирования(добавление) записи из базы данных
     fields = [
         "title",
         "slug",
         "content",
+        "photo",
+        "post_photo",
         "cat",
         "husband",
         "tags",
@@ -47,7 +50,7 @@ class WomenAdmin(admin.ModelAdmin):
     # exclude = ["tags", "is_published"]
 
     # указывает поля, которые только для чтения
-    # readonly_fields = ["slug"]
+    readonly_fields = ["post_photo"]
 
     # автоматически формируеться slug по записаному нами title , тогда нужно выключать readonly_fields
     prepopulated_fields = {"slug": ("title",)}
@@ -56,15 +59,15 @@ class WomenAdmin(admin.ModelAdmin):
     filter_horizontal = [
         "tags",
     ]
-    
+
     # ---   Начальная Форма отображения Базы Данных   ----------------------------------------------------------------------------
-    # содержит название колонок, которые будут отображаться
+    # содержит название колонок, которые будут отображаться при начальном отображении
     list_display = (
         "title",
+        "post_photo",
         "time_create",
         "is_published",
         "cat",
-        "brief_info",
     )
 
     # содержит названия колокнок нажавши на которые переходит в выбраную запись в базе
@@ -93,7 +96,7 @@ class WomenAdmin(admin.ModelAdmin):
         "cat__name",
     )
 
-    # указываем колонки по которым будет произваодиться фильтрация -> блок слева
+    # указываем колонки по которым будет произваодиться фильтрация -> блок справа
     list_filter = (
         # MarriedFilter - свой созданый више фильтр
         MarriedFilter,
@@ -101,12 +104,27 @@ class WomenAdmin(admin.ModelAdmin):
         "is_published",
     )
 
+    # делает кнопки сохранение поста и сверху тоже
+    save_on_top = True
+
+    # НЕ ИСПОЛЬЗУЕМ
     # создание еще одной колонки в админ панели , ета колонка не связаная с базой данных
     # description дает новое название для колонки
     # ordering связываеться с полем content в базе данных и дает возможность сортировать в админ панеле
-    @admin.display(description="Краткое Описание", ordering="content")
-    def brief_info(self, women: Women):
-        return f"Описание {len(women.content)} символов"
+    # @admin.display(description="Краткое Описание", ordering="content")
+    # def brief_info(self, women: Women):
+    #     return f"Описание {len(women.content)} символов"
+    # -----------------------------------------------------------------------------------------------------
+
+    # ПОКА НЕ РАБОТАЕТ
+    @admin.display(description="Фото Поста", ordering="content")
+    def post_photo(self, women: Women):
+        if women.photo:
+            # функция mark_safe выключает екранирование строки , строка будет выполняться, а не просто отображаться на странице
+            return mark_safe(f"<img src='{women.photo.url}' width=50>")
+        return "Без фото"
+
+    # ----------------------------------------------------------------------------------------------------------------
 
     # ---   Функции для поля Фильтрации которое по Центру   ------------------------------------------------------------------------------------
     # request - запрос до базы данных

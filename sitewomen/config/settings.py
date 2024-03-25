@@ -140,7 +140,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 
-# базовый путь к статическим файлам
+# путь к статическим файлам, откуда будет брать их сайт
 STATIC_URL = "static/"
 
 
@@ -150,8 +150,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 # MEDIA_ROOT указывать путь к медиа файла, которые загрузил пользователь на сайт
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_ROOT = BASE_DIR / "media"
 
+# MEDIA_URL указиваеть путь откуда брать сайту медиа файлы
+# добавляет media/ перед путями scr файлов
+MEDIA_URL = "/media/"
 
 # содержит в путь в главной папки с статическими фалами, куда перемещаються после python manage.py collectstatic
 # STATIC_ROOT = ""

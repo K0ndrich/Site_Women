@@ -15,10 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from config import settings
 from django.contrib import admin
 from django.urls import path, include
 from women.views import page_not_found
-
+from django.conf.urls.static import static
 
 # просписывает главные пути URL на сайте
 urlpatterns = [
@@ -29,6 +30,11 @@ urlpatterns = [
     # берез из django debug toolbar
     path("__debug__/", include("debug_toolbar.urls")),
 ]
+
+# связывает между собой пути MEDIA_URL + MEDIA_ROOT для нормального отображения файлов.
+# нужно прописивать при использовании сервера в режиме ОТЛАДКИ
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # при ненахождении URL адресса будет вызывать реализованое нами представление page_not_found
 handler404 = page_not_found
 

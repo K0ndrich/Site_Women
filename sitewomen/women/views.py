@@ -18,6 +18,10 @@ from .models import Women, Category, TagPost, UploadFiles
 
 from .forms import AddPostForm, UploadFileForm
 
+# добавляем представления на основе шаблонов
+from django.views import View
+from django.views.generic.base import TemplateView
+
 menu = [
     {"title": "О сайте", "url_name": "about"},
     {"title": "Добавить Статью", "url_name": "add_page"},
@@ -25,24 +29,35 @@ menu = [
     {"title": "Войти", "url_name": "login"},
 ]
 
-
+# -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции   ----------------------------------------------------------------------------------------
 # HTTP request - хранить иформацию о текущем запросе от пользователя
-def index(request):
+# def index(request):
 
-    # published - ето свой менеджер, которы переопределено от базового
-    # select_related - производиться жадная загрузка данных из таблиц по ForeignKey , cat - название колонки связывания с внешней таблицой
-    # prefetch_related - производиться жадная загрузка данных из таблиц только по ManyToMany
-    # жадная загрузка убирает повторение запросов из баззы данных
-    posts = Women.published.all().select_related("cat")
+#     # published - ето свой менеджер, которы переопределено от базового
+#     # select_related - производиться жадная загрузка данных из таблиц по ForeignKey , cat - название колонки связывания с внешней таблицой
+#     # prefetch_related - производиться жадная загрузка данных из таблиц только по ManyToMany
+#     # жадная загрузка убирает повторение запросов из баззы данных
+#     posts = Women.published.all().select_related("cat")
 
-    data = {
+#     data = {
+#         "title": "Главная Страница",
+#         "menu": menu,
+#         "posts": posts,
+#         "cat_selected": 0,
+#     }
+#     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
+#     return render(request, "women/index.html", context=data)
+
+
+# Реализация представление на основе класса (переопредиляем представление index)
+class WomenHome(TemplateView):
+    template_name = "women/index.html"
+    extra_context = {
         "title": "Главная Страница",
         "menu": menu,
-        "posts": posts,
+        "posts": Women.published.all().select_related("cat"),
         "cat_selected": 0,
     }
-    # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
-    return render(request, "women/index.html", context=data)
 
 
 # НЕ ИСПОЛЬЗУЕМ
@@ -95,31 +110,48 @@ def showpost(request, post_slug):
     return render(request, "women/post.html", data)
 
 
-def addpage(request):
-    if request.method == "POST":
-        # request.POST содержит данные атрибут = значение которые были отправленные на сервер
-        form = AddPostForm(request.POST, request.FILES)
-        # is_valid проверяет соответствуют ли передание значения характеристикам, которые указаны в forms.py
-        if form.is_valid():
-            # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
-            # print(f"{form.cleaned_data}")
-            # try:
-            #     # создаеться новая запис в базе данных
-            #     # **form.cleaned_data - данные из формы передаються в виде словаря, нужно розпаковывать
-            #     Women.objects.create(**form.cleaned_data)
-            #     return redirect("home")
-            # except:
-            #     # добавление ошибки в список полей non_field_errors в шаблонах
-            #     form.add_error(None, "Ошибка добавления поста")
+# -----   СТАРОЕ ПРЕДСТАВЛЕНИЕ ADDPAGE основанное на одной функции -------------------------------------------------------------------------
+# def addpage(request):
+#     if request.method == "POST":
+#         # request.POST содержит данные атрибут = значение которые были отправленные на сервер
+#         form = AddPostForm(request.POST, request.FILES)
+#         # is_valid проверяет соответствуют ли передание значения характеристикам, которые указаны в forms.py
+#         if form.is_valid():
+#             # form.cleaned_data возвращает данные, которые вводит пользователь в формы на сайте
+#             # print(f"{form.cleaned_data}")
+#             # try:
+#             #     # создаеться новая запис в базе данных
+#             #     # **form.cleaned_data - данные из формы передаються в виде словаря, нужно розпаковывать
+#             #     Women.objects.create(**form.cleaned_data)
+#             #     return redirect("home")
+#             # except:
+#             #     # добавление ошибки в список полей non_field_errors в шаблонах
+#             #     form.add_error(None, "Ошибка добавления поста")
 
-            # данные записанные пользователем в форме -> записиваються в базу данных Women
-            form.save()
-            return redirect('home')
-    else:
+#             # данные записанные пользователем в форме -> записиваються в базу данных Women
+#             form.save()
+#             return redirect('home')
+#     else:
+#         form = AddPostForm()
+
+#     data = {"menu": menu, "title": "Добавление Статьи", "form": form}
+#     return render(request, "women/addpage.html", data)
+
+
+# представление основаное на классе
+class AddPage(View):
+    def get(self, request):
         form = AddPostForm()
+        data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
+        return render(request, "women/addpage.html", data)
 
-    data = {"menu": menu, "title": "Добавление Статьи", "form": form}
-    return render(request, "women/addpage.html", data)
+    def post(self, request):
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
+        return render(request, "women/addpage.html", data)
 
 
 def contact(request):
