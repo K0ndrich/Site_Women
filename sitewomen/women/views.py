@@ -20,7 +20,7 @@ from .forms import AddPostForm, UploadFileForm
 
 # добавляем представления на основе шаблонов
 from django.views import View
-from django.views.generic.base import TemplateView
+from django.views.generic import TemplateView, ListView
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -29,7 +29,7 @@ menu = [
     {"title": "Войти", "url_name": "login"},
 ]
 
-# -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции   ----------------------------------------------------------------------------------------
+# -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции , новое представление ↓↓↓↓↓   ----------------------------------------------------------------------------------------
 # HTTP request - хранить иформацию о текущем запросе от пользователя
 # def index(request):
 
@@ -49,18 +49,40 @@ menu = [
 #     return render(request, "women/index.html", context=data)
 
 
-# Реализация представление на основе класса (переопредиляем представление index)
-class WomenHome(TemplateView):
+# Реализация представление на основе класса TemplateView (переопредиляем представление index)
+# class WomenHome(TemplateView):
+#     # внутри не нужно прописывать render, само связывает шаблон и данные для шаблона
+#     template_name = "women/index.html"
+
+#     # в extra_context не можна подставлять динамические данные, которрые вводит пользователь на сайте
+#     extra_context = {
+#         "title": "Главная Страница",
+#         "menu": menu,
+#         "posts": Women.published.all().select_related("cat"),
+#         "cat_selected": 0,
+#     }
+
+
+# представление AddPage на основе класса ListView
+class WomenHome(ListView):
+    # указываем модель из которой будут браться записи , связываем представление в моделью
+    # model = Women
+    # ListView фомирует внутри указаного шаблона object_list, в которой храняться наши записи из модели уканаой више
     template_name = "women/index.html"
+    # даем новое название для object_list в index.html
+    context_object_name = "posts"
     extra_context = {
         "title": "Главная Страница",
         "menu": menu,
-        "posts": Women.published.all().select_related("cat"),
         "cat_selected": 0,
     }
 
+    # указываем отфильтровать колонку post и выводить только опубликованные данные
+    def get_queryset(self):
+        return Women.published.all().select_related("cat")
 
-# НЕ ИСПОЛЬЗУЕМ
+
+# НЕ ИСПОЛЬЗУЕМ старая версия для ↓↓↓↓↓
 # функция для загрузки файлов от пользователя на сервер (функция взяли из сайта документации)
 # f - ето файл, который передал пользователь
 # def handle_uploaded_file(f):
@@ -138,7 +160,7 @@ def showpost(request, post_slug):
 #     return render(request, "women/addpage.html", data)
 
 
-# представление основаное на классе
+# НОВОЕ ПРЕДСТАВЛЕНИЕ ADDPAGE основаное на классе
 class AddPage(View):
     def get(self, request):
         form = AddPostForm()
@@ -162,17 +184,42 @@ def login(request):
     return HttpResponse("Авторизация")
 
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related("cat")
-    data = {
-        "title": f"Рубрика: {category.name}",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": category.pk,
-    }
-    # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
-    return render(request, "women/index.html", context=data)
+# -----   СТАРОЕ ПРЕДСТАЛВЕНИЕ ПОКАЗЫВАНИЯ КАТЕГОРИЯ СЛЕВА основаное на функции   ---------------------------------
+# def show_category(request, cat_slug):
+#     category = get_object_or_404(Category, slug=cat_slug)
+#     posts = Women.published.filter(cat_id=category.pk).select_related("cat")
+#     data = {
+#         "title": f"Рубрика: {category.name}",
+#         "menu": menu,
+#         "posts": posts,
+#         "cat_selected": category.pk,
+#     }
+#     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
+#     return render(request, "women/index.html", context=data)
+
+
+# Переопредиление показывания категорий show_category
+class WomenCategory(ListView):
+    template_name = "women/index.html"
+    context_object_name = "posts"
+    # при пустом cat = context["posts"][0].cat будет генерироваться ошибка 404
+    allow_empty = False
+
+    # get_context_data срабатывает в момент создание пользователем GET запроса
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context["posts"][0].cat
+        context["title"] = "Категория - " + cat.name
+        # cat_id - ето атрибут который можна вписать в url cat_id=1
+        # 0 - ето значени по умолчанию для cat_id
+        context["cat_selected"] = cat.pk
+        return context
+
+    def get_queryset(self):
+        # kwargs предаставялет значение колонки текущей категории
+        return Women.published.filter(cat__slug=self.kwargs["cat_slug"]).select_related(
+            "cat"
+        )
 
 
 def show_tag_postlist(request, tag_slug):
