@@ -222,6 +222,7 @@ class WomenCategory(ListView):
         )
 
 
+# СТАРОЕ ПРЕДСТАВЛЕНИЕ ПОКАЗА ТЕГОВ show_tag_postlist основаное на функции
 def show_tag_postlist(request, tag_slug):
     tag = get_object_or_404(TagPost, slug=tag_slug)
     posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
@@ -232,6 +233,15 @@ def show_tag_postlist(request, tag_slug):
         "cat_selected": None,
     }
     return render(request, "women/index.html", context=data)
+
+
+# class TagPostList(ListView):
+#     template = "women/index.html"
+#     context_object_name = "posts"
+#     allow_empty = False
+
+#     def get_context_data(self , * , object_list=None , **kwargs):
+
 
 
 def page_not_found(request, exception):
