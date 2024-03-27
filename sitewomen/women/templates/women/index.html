@@ -3,6 +3,7 @@
 
 {% block content %}
 <ul class="list-articles">
+    <!-- значение posts - ето переименованый object_list , который береться из get_query_set в ListView (views.py)-->
     {% for p in posts %}
 
     <li>
@@ -11,6 +12,7 @@
             <p class="last">Дата: {{p.time_update | date:"d-m-Y H:i:s"}}</p>
         </div>
         {%if p.photo%}
+        <!-- p.photo.url ето значение из get_absolute_url текущей записи в текущей модели -->
         <p><img class="img-article-left thumb" src="{{p.photo.url}}"></p>
         {% endif %}
         <h2>{{p.title}}</h2>

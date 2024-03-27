@@ -47,14 +47,15 @@ menu = [
 #     }
 #     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
 #     return render(request, "women/index.html", context=data)
+# -----   END   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-# Реализация представление на основе класса TemplateView (переопредиляем представление index)
+# -----   Реализация представление на основе класса TemplateView (переопредиляем представление index)   ------------------------------------------------------
 # class WomenHome(TemplateView):
 #     # внутри не нужно прописывать render, само связывает шаблон и данные для шаблона
 #     template_name = "women/index.html"
 
-#     # в extra_context не можна подставлять динамические данные, которрые вводит пользователь на сайте
+#     # внутрь extra_context передаються статические данные в момент загрузки сайта.
+#     # Из get_context_data могут передаваться внутрь extra_context уже динамические данные
 #     extra_context = {
 #         "title": "Главная Страница",
 #         "menu": menu,
@@ -62,14 +63,24 @@ menu = [
 #         "cat_selected": 0,
 #     }
 
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["title"] = "Главная Страница"
+#         context["menu"] = menu
+#         context["posts"] = Women.published.all().select_related("cat")
+#         # позволяет подставлять cat_id в URL пользователем
+#         context["cat_selected"] = int(self.request.GET.get("cat_id", 0))
+#         return context
 
-# представление AddPage на основе класса ListView
+# -----   END   --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# представление WomenHome (переопределен index) на основе класса ListView
 class WomenHome(ListView):
     # указываем модель из которой будут браться записи , связываем представление в моделью
-    # model = Women
     # ListView фомирует внутри указаного шаблона object_list, в которой храняться наши записи из модели уканаой више
     template_name = "women/index.html"
-    # даем новое название для object_list в index.html
+    # даем новое название для object_list в index.html или других файлах .html
     context_object_name = "posts"
     extra_context = {
         "title": "Главная Страница",
@@ -77,7 +88,9 @@ class WomenHome(ListView):
         "cat_selected": 0,
     }
 
-    # указываем отфильтровать колонку post и выводить только опубликованные данные
+    # в классе ListView можна выбирать записи из базы данных
+    # берем записи из базы данных для вывода, ети записи будуть находиться внутри object_list в index.html
+    # model = Women значение переопредиляеться внутри етой функции
     def get_queryset(self):
         return Women.published.all().select_related("cat")
 
@@ -158,9 +171,10 @@ def showpost(request, post_slug):
 
 #     data = {"menu": menu, "title": "Добавление Статьи", "form": form}
 #     return render(request, "women/addpage.html", data)
+# -----   END   ---------------------------------------------------------------------------------------------------------------------------------
 
 
-# НОВОЕ ПРЕДСТАВЛЕНИЕ ADDPAGE основаное на классе
+# НОВОЕ представление ADDPAGE основаное на классе View
 class AddPage(View):
     def get(self, request):
         form = AddPostForm()
@@ -184,7 +198,7 @@ def login(request):
     return HttpResponse("Авторизация")
 
 
-# -----   СТАРОЕ ПРЕДСТАЛВЕНИЕ ПОКАЗЫВАНИЯ КАТЕГОРИЯ СЛЕВА основаное на функции   ---------------------------------
+# -----   СТАРОЕ ПРЕДСТАВЛЕНИЕ ПОКАЗЫВАНИЯ КАТЕГОРИЯ СЛЕВА основаное на функции   ---------------------------------
 # def show_category(request, cat_slug):
 #     category = get_object_or_404(Category, slug=cat_slug)
 #     posts = Women.published.filter(cat_id=category.pk).select_related("cat")
@@ -196,52 +210,80 @@ def login(request):
 #     }
 #     # 3-й параметр ето значения которые подставляем в шаблон , context можна и не указывать
 #     return render(request, "women/index.html", context=data)
+# ------   END   -----------------------------------------------------------------------------------------
 
 
-# Переопредиление показывания категорий show_category
+# НОВОЕ представление show_category на основе класса ListView
 class WomenCategory(ListView):
+
     template_name = "women/index.html"
     context_object_name = "posts"
-    # при пустом cat = context["posts"][0].cat будет генерироваться ошибка 404
+
+    # добавляем что , при пустом значении context["posts"] будет генерироваться ошибка 404
     allow_empty = False
 
-    # get_context_data срабатывает в момент создание пользователем GET запроса
+    # get_context_data соберает все значение динамических данных(которые отправил пользователь) -->
+    # в extra_contex , который передаеться внутрь шаблона указаного в template_name
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
+
+        # берем из всех записей модели Women значение колонки cat
         cat = context["posts"][0].cat
+
         context["title"] = "Категория - " + cat.name
-        # cat_id - ето атрибут который можна вписать в url cat_id=1
-        # 0 - ето значени по умолчанию для cat_id
+
+        # cat_selected атрибут который можна вписать в url cat_selected=1 , ети значения из колонки id модели Category
+        # cat_selected - ето значение из колонки cat в модели Women
         context["cat_selected"] = cat.pk
         return context
 
     def get_queryset(self):
-        # kwargs предаставялет значение колонки текущей категории
+        # self.kwargs["cat_slug"] ето значение которое мы передали в URL (название переменной определяеться в urls.py)
         return Women.published.filter(cat__slug=self.kwargs["cat_slug"]).select_related(
             "cat"
         )
 
 
-# СТАРОЕ ПРЕДСТАВЛЕНИЕ ПОКАЗА ТЕГОВ show_tag_postlist основаное на функции
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
-    data = {
-        "title": f"Тег:{tag.tag}",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": None,
-    }
-    return render(request, "women/index.html", context=data)
+# СТАРОЕ ПРЕДСТАВЛЕНИЕ show_tag_postlist основаное на функции   -------------------------------------------------------------------------
+# def show_tag_postlist(request, tag_slug):
+#     tag = get_object_or_404(TagPost, slug=tag_slug)
+#     posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+#     data = {
+#         "title": f"Тег:{tag.tag}",
+#         "menu": menu,
+#         "posts": posts,
+#         "cat_selected": None,
+#     }
+#     return render(request, "women/index.html", context=data)
+# -----   END   ------------------------------------------------------------------------------------------------------------------------------------
 
 
-# class TagPostList(ListView):
-#     template = "women/index.html"
-#     context_object_name = "posts"
-#     allow_empty = False
+# НОВОЕ ПРЕДСТАВЛЕНИЕ показа тегов от show_tag_postlist основанное на классе ListView
+class TagPostList(ListView):
 
-#     def get_context_data(self , * , object_list=None , **kwargs):
+    template = "women/index.html"
+    context_object_name = "posts"
+    allow_empty = False
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # self.kwargs["tag_slug"] ето значение которое мы передали в URL (название переменной определяеться в urls.py)
+        tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
+
+        context["title"] = "Тег - " + tag.tag
+        context["menu"] = menu
+        context["cat_selected"] = None
+
+        return context
+
+    def get_queryset(self):
+
+        # tags__slug   tags ето название колонки в модели Women , slug ето название колонки модели на которою ссылаеться tags
+        return Women.published.filter(
+            tags__slug=self.kwargs["tag_slug"]
+        ).select_related("cat")
 
 
 def page_not_found(request, exception):

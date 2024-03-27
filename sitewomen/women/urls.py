@@ -12,11 +12,11 @@ from . import converters
 register_converter(converters.FourDigitYearConverter, "year4")
 
 urlpatterns = [
-    # name позволяет использовать заданый маршрут в других файлах проекта
-    # использование представления на основе класса
+    # name позволяет использовать заданый маршрут в других файлах проекта обращаясь по его значению
+    # использование представления WomenHome на основе класса
     path(
         "",
-        # значения extra_context из views.py можно переопределять здесь
+        # значения extra_context можна указывать вручную в .as_view(extra_context = {"title":"Главная Страница"})
         views.WomenHome.as_view(),
         name="home",
     ),
@@ -26,5 +26,5 @@ urlpatterns = [
     path("login/", views.login, name="login"),
     path("post/<slug:post_slug>/", views.showpost, name="post"),
     path("category/<slug:cat_slug>/", views.WomenCategory.as_view(), name="category"),
-    path("tag/<slug:tag_slug>/", views.show_tag_postlist, name="tag"),
+    path("tag/<slug:tag_slug>/", views.TagPostList.as_view(), name="tag"),
 ]
