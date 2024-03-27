@@ -262,7 +262,7 @@ class WomenCategory(ListView):
 # НОВОЕ ПРЕДСТАВЛЕНИЕ показа тегов от show_tag_postlist основанное на классе ListView
 class TagPostList(ListView):
 
-    template = "women/index.html"
+    template_name = "women/index.html"
     context_object_name = "posts"
     allow_empty = False
 
