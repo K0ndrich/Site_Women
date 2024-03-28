@@ -20,7 +20,18 @@ from .forms import AddPostForm, UploadFileForm
 
 # добавляем представления на основе классов
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic import (
+    TemplateView,
+    ListView,
+    DetailView,
+    FormView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+
+# добавляем свой миксин из файла с миксинами utils.py
+from .utils import DataMixin
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -149,7 +160,9 @@ def about(request):
 
 # НОВОЕ представление для показа одного поста основаное на классе DetailView
 # DetailView позволяет брать и отображать одну запись из модели
-class ShowPost(DetailView):
+# DataMixin - ето миксин который хранит внутри себя информацию для заполнения в шаблонах ,
+# Миксины всегда записываються первыми , перед класами представления
+class ShowPost(DataMixin, DetailView):
     # не нужно , если используем get_object
     # model = Women
     template_name = "women/post.html"
@@ -163,9 +176,8 @@ class ShowPost(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = context["post"].title
-        context["menu"] = menu
-        return context
+        # берем метод из миксина
+        return self.get_mixin_context(context, title=context["post"].title)
 
     # функция из которой беруться записи и записываються в object в post.html , название object переопределено на post
     def get_object(self, queryset=None):
@@ -219,26 +231,65 @@ class ShowPost(DetailView):
 # -----   END   ---------------------------------------------------------------------------------------------------------------------------------
 
 
-# предсталвение AddPage основаное на классе DetailView
+# предсталвение AddPage основаное на классе DetailView   -----------------------------------------------------------------------------
 # DetailView позволяет работать с формами и переопредилять их методы
-class AddPage(FormView):
+# class AddPage(FormView):
 
-    # form_class ccылаеться на класс формы (forms.py)
-    # передает обьект form в addpage.html
+#     # form_class ccылаеться на класс формы (forms.py)
+#     # передает обьект form в addpage.html
+#     form_class = AddPostForm
+#     template_name = "women/addpage.html"
+
+#     # после успешной отправки формы перенаправляемся по указаному URL
+#     # reverse возвращает полный путь URL сразу при запуске сайта
+#     # reverse_lazy возвращает полный путь URL только при ее вызове
+#     success_url = reverse_lazy("home")
+#     extra_context = {"title": "Добавление Статьи", "menu": menu}
+
+#     # form_valid функция сохранения данных из формы в модель , ета функция вызываеться после проверки is_valid()
+#     # form - ето текущая форма которую отправил пользователь , определяеться в form_class = AddPostForm
+#     def form_valid(self, form):
+#         form.save()
+#         return super().form_valid(form)
+# -----   END   --------------------------------------------------------------------------------------------------------------
+
+
+# Представление AddPage основанное на классе CreateView
+# CreateView класс для создание новых записей в модели
+class AddPage(CreateView):
     form_class = AddPostForm
-    template_name = "women/addpage.html"
 
-    # после успешной отправки формы перенаправляемся по указаному URL
-    # reverse возвращает полный путь URL сразу при запуске сайта
-    # reverse_lazy возвращает полный путь URL только при ее вызове
+    # model = Women
+    # отображение всех полей из формы , также можна указывать каждое поле
+    # fields = "__all__"
+
+    template_name = "women/addpage.html"
     success_url = reverse_lazy("home")
     extra_context = {"title": "Добавление Статьи", "menu": menu}
 
-    # form_valid функция сохранения данных из формы в модель , ета функция вызываеться после проверки is_valid()
-    # form - ето текущая форма которую отправил пользователь , определяеться в form_class = AddPostForm
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    # функция form_valid уже по умолчанию работает внутри CreateView , запись автоматически сохраняеться в модель
+    # после выполнение представление выполняеться get_absolute_url в модели, которая привязана Women -->
+    # и после успешного добавлние поста переходит на етот пост на сайте
+
+
+# представление для изменение уже существующих постов на основе класса UpdateView
+# UpdateView влужит для изменения уже существующих записей в модели
+class UpdatePage(UpdateView):
+    model = Women
+    fields = ["title", "slug", "content", "photo", "is_published", "cat"]
+    success_url = reverse_lazy("home")
+    template_name = "women/addpage.html"
+    extra_context = {"title": "Редактирование Статьи", "menu": menu}
+
+
+# представление для удаления постов на основе класса UpdateView
+# DeleteView служит для удаление записей из модели
+class DeletePage(DeleteView):
+    model = Women
+    fields = ["title", "slug", "content", "photo", "is_published", "cat"]
+    success_url = reverse_lazy("home")
+    template_name = "women/addpage.html"
+    extra_context = {"title": "Удаление Статьи", "menu": menu}
 
 
 def contact(request):
