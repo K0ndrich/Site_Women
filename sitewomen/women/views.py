@@ -12,15 +12,15 @@ from django.http import (
 from django.shortcuts import render, redirect, get_object_or_404
 
 # reverse записивает в переменую путь с передачей аргументов
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from .models import Women, Category, TagPost, UploadFiles
 
 from .forms import AddPostForm, UploadFileForm
 
-# добавляем представления на основе шаблонов
+# добавляем представления на основе классов
 from django.views import View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -132,17 +132,44 @@ def about(request):
     return render(request, "women/about.html", data)
 
 
-def showpost(request, post_slug):
-    # функция get_object_or_404 либо возвращает обькт по указаным параметрам из модели либо ошибку 404
-    # Women - название модели , slug - название колонки из етой модели
-    post = get_object_or_404(Women, slug=post_slug)
-    data = {
-        "title": post.title,
-        "menu": menu,
-        "post": post,
-        "cat_selected": 1,
-    }
-    return render(request, "women/post.html", data)
+# СТАРОЕ представление для отображение одного поста на основе функции ----------------------------------------------------------------------------------------
+# def showpost(request, post_slug):
+#     # функция get_object_or_404 либо возвращает обькт по указаным параметрам из модели либо ошибку 404
+#     # Women - название модели , slug - название колонки из етой модели
+#     post = get_object_or_404(Women, slug=post_slug)
+#     data = {
+#         "title": post.title,
+#         "menu": menu,
+#         "post": post,
+#         "cat_selected": 1,
+#     }
+#     return render(request, "women/post.html", data)
+# -----   END   ------------------------------------------------------------------------------------------------------------------------------
+
+
+# НОВОЕ представление для показа одного поста основаное на классе DetailView
+# DetailView позволяет брать и отображать одну запись из модели
+class ShowPost(DetailView):
+    # не нужно , если используем get_object
+    # model = Women
+    template_name = "women/post.html"
+
+    # указываем название переменной которая будет подставляться в URL (urls.py)
+    slug_url_kwarg = "post_slug"
+
+    # внутрь post.html педедаеться обьекта object который хранит значения model = Women
+    # context_object_name дает новое название для обьекта object внутри post.html
+    context_object_name = "post"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = context["post"].title
+        context["menu"] = menu
+        return context
+
+    # функция из которой беруться записи и записываються в object в post.html , название object переопределено на post
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
 # -----   СТАРОЕ ПРЕДСТАВЛЕНИЕ ADDPAGE основанное на одной функции -------------------------------------------------------------------------
@@ -174,20 +201,44 @@ def showpost(request, post_slug):
 # -----   END   ---------------------------------------------------------------------------------------------------------------------------------
 
 
-# НОВОЕ представление ADDPAGE основаное на классе View
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
-        return render(request, "women/addpage.html", data)
+# # Представление ADDPAGE основаное на классе View   ----------------------------------------------------------------------------------------
+# # View позволяет отображать страници в зависимости от запроса GET или POST пользователя
+# class AddPage(View):
+#     def get(self, request):
+#         form = AddPostForm()
+#         data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
+#         return render(request, "women/addpage.html", data)
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("home")
-        data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
-        return render(request, "women/addpage.html", data)
+#     def post(self, request):
+#         form = AddPostForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("home")
+#         data = {"menu": menu, "title": "Добавление Сатьи", "form": form}
+#         return render(request, "women/addpage.html", data)
+# -----   END   ---------------------------------------------------------------------------------------------------------------------------------
+
+
+# предсталвение AddPage основаное на классе DetailView
+# DetailView позволяет работать с формами и переопредилять их методы
+class AddPage(FormView):
+
+    # form_class ccылаеться на класс формы (forms.py)
+    # передает обьект form в addpage.html
+    form_class = AddPostForm
+    template_name = "women/addpage.html"
+
+    # после успешной отправки формы перенаправляемся по указаному URL
+    # reverse возвращает полный путь URL сразу при запуске сайта
+    # reverse_lazy возвращает полный путь URL только при ее вызове
+    success_url = reverse_lazy("home")
+    extra_context = {"title": "Добавление Статьи", "menu": menu}
+
+    # form_valid функция сохранения данных из формы в модель , ета функция вызываеться после проверки is_valid()
+    # form - ето текущая форма которую отправил пользователь , определяеться в form_class = AddPostForm
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 def contact(request):
@@ -213,7 +264,8 @@ def login(request):
 # ------   END   -----------------------------------------------------------------------------------------
 
 
-# НОВОЕ представление show_category на основе класса ListView
+# НОВОЕ представление показа постов по категориям show_category на основе класса ListView
+# ListView позволяет отображать все записи в модели
 class WomenCategory(ListView):
 
     template_name = "women/index.html"
@@ -259,7 +311,7 @@ class WomenCategory(ListView):
 # -----   END   ------------------------------------------------------------------------------------------------------------------------------------
 
 
-# НОВОЕ ПРЕДСТАВЛЕНИЕ показа тегов от show_tag_postlist основанное на классе ListView
+# НОВОЕ ПРЕДСТАВЛЕНИЕ показа постов по тегам от show_tag_postlist основанное на классе ListView
 class TagPostList(ListView):
 
     template_name = "women/index.html"
