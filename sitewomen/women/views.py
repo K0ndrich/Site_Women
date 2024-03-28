@@ -33,12 +33,6 @@ from django.views.generic import (
 # добавляем свой миксин из файла с миксинами utils.py
 from .utils import DataMixin
 
-menu = [
-    {"title": "О сайте", "url_name": "about"},
-    {"title": "Добавить Статью", "url_name": "add_page"},
-    {"title": "Обратная связь", "url_name": "contact"},
-    {"title": "Войти", "url_name": "login"},
-]
 
 # -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции , новое представление ↓↓↓↓↓   ----------------------------------------------------------------------------------------
 # HTTP request - хранить иформацию о текущем запросе от пользователя
@@ -87,17 +81,22 @@ menu = [
 
 
 # представление WomenHome (переопределен index) на основе класса ListView
-class WomenHome(ListView):
+class WomenHome(DataMixin, ListView):
     # указываем модель из которой будут браться записи , связываем представление в моделью
     # ListView фомирует внутри указаного шаблона object_list, в которой храняться наши записи из модели уканаой више
     template_name = "women/index.html"
+
     # даем новое название для object_list в index.html или других файлах .html
     context_object_name = "posts"
-    extra_context = {
-        "title": "Главная Страница",
-        "menu": menu,
-        "cat_selected": 0,
-    }
+
+    title_page = "Главная Старница"
+
+    # вместо extra_context используем метод Миксина
+    # extra_context = {
+    #     "title": "Главная Страница",
+    #     "menu": menu,
+    #     "cat_selected": 0,
+    # }
 
     # в классе ListView можна выбирать записи из базы данных
     # берем записи из базы данных для вывода, ети записи будуть находиться внутри object_list в index.html
@@ -256,16 +255,15 @@ class ShowPost(DataMixin, DetailView):
 
 # Представление AddPage основанное на классе CreateView
 # CreateView класс для создание новых записей в модели
-class AddPage(CreateView):
+class AddPage(DataMixin, CreateView):
     form_class = AddPostForm
 
     # model = Women
     # отображение всех полей из формы , также можна указывать каждое поле
     # fields = "__all__"
-
+    title_page = "Добавление Статьи"
     template_name = "women/addpage.html"
     success_url = reverse_lazy("home")
-    extra_context = {"title": "Добавление Статьи", "menu": menu}
 
     # функция form_valid уже по умолчанию работает внутри CreateView , запись автоматически сохраняеться в модель
     # после выполнение представление выполняеться get_absolute_url в модели, которая привязана Women -->
@@ -274,22 +272,22 @@ class AddPage(CreateView):
 
 # представление для изменение уже существующих постов на основе класса UpdateView
 # UpdateView влужит для изменения уже существующих записей в модели
-class UpdatePage(UpdateView):
+class UpdatePage(DataMixin, UpdateView):
     model = Women
     fields = ["title", "slug", "content", "photo", "is_published", "cat"]
     success_url = reverse_lazy("home")
     template_name = "women/addpage.html"
-    extra_context = {"title": "Редактирование Статьи", "menu": menu}
+    title_page = "Редактирование Статьи"
 
 
 # представление для удаления постов на основе класса UpdateView
 # DeleteView служит для удаление записей из модели
-class DeletePage(DeleteView):
+class DeletePage(DataMixin, DeleteView):
     model = Women
     fields = ["title", "slug", "content", "photo", "is_published", "cat"]
     success_url = reverse_lazy("home")
     template_name = "women/addpage.html"
-    extra_context = {"title": "Удаление Статьи", "menu": menu}
+    title_page = "Удаление Статьи"
 
 
 def contact(request):
