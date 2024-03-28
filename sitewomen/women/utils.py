@@ -8,10 +8,12 @@ menu = [
 ]
 
 
-# DataMixin - Миксин для сборки данных, которые всталвяються в шаблон
+# DataMixin - Миксин для сборки данных, которые вставляються в шаблон
 class DataMixin:
-    title_page = None
+    # пререопределяем extra_context
     extra_context = {}
+    title_page = None
+    cat_selected = None
 
     def __init__(self):
         if self.title_page:
@@ -19,6 +21,9 @@ class DataMixin:
 
         if "menu" not in self.extra_context:
             self.extra_context["menu"] = menu
+
+        if self.cat_selected is not None:
+            self.extra_context["cat_selected"] = self.cat_selected
 
     # context - ето словарь c данными для вставки в шаблон из функции get_context_data
     def get_mixin_context(self, context, **kwargs):

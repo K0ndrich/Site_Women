@@ -33,6 +33,13 @@ from django.views.generic import (
 # добавляем свой миксин из файла с миксинами utils.py
 from .utils import DataMixin
 
+menu = [
+    {"title": "О сайте", "url_name": "about"},
+    {"title": "Добавить Статью", "url_name": "add_page"},
+    {"title": "Обратная связь", "url_name": "contact"},
+    {"title": "Войти", "url_name": "login"},
+]
+
 
 # -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции , новое представление ↓↓↓↓↓   ----------------------------------------------------------------------------------------
 # HTTP request - хранить иформацию о текущем запросе от пользователя
@@ -91,6 +98,8 @@ class WomenHome(DataMixin, ListView):
 
     title_page = "Главная Старница"
 
+    cat_selected = 0
+
     # вместо extra_context используем метод Миксина
     # extra_context = {
     #     "title": "Главная Страница",
@@ -115,6 +124,7 @@ class WomenHome(DataMixin, ListView):
 #             destination.write(chunk)
 
 
+# просто реализовуваем добавление данных в модель UploadFiles
 def about(request):
     if request.method == "POST":
         # создание заполненого обьекта формы, которая заполнена колекцией запроса пользователя(request.POST)
@@ -123,7 +133,7 @@ def about(request):
         if form.is_valid():
 
             # НЕ ИСПОЛЬЗУЕМ
-            # передаем внутрь функии обьявленой више файл, который отправил пользователь
+            # передаем внутрь функции обьявленой више файл, который отправил пользователь
             # handle_uploaded_file(form.cleaned_data["file"])
             # --------------------------------------------------------------------------
 
@@ -134,6 +144,7 @@ def about(request):
     else:
         # создание обьекта формы , который пустой
         form = UploadFileForm()
+
     data = {
         "title": "О сайте",
         "menu": menu,
@@ -315,7 +326,7 @@ def login(request):
 
 # НОВОЕ представление показа постов по категориям show_category на основе класса ListView
 # ListView позволяет отображать все записи в модели
-class WomenCategory(ListView):
+class WomenCategory(DataMixin, ListView):
 
     template_name = "women/index.html"
     context_object_name = "posts"
@@ -331,13 +342,16 @@ class WomenCategory(ListView):
 
         # берем из всех записей модели Women значение колонки cat
         cat = context["posts"][0].cat
+        return self.get_mixin_context(
+            context, title="Категория - " + cat.name, cat_selected=cat.pk
+        )
 
-        context["title"] = "Категория - " + cat.name
+        # context["title"] = "Категория - " + cat.name
 
-        # cat_selected атрибут который можна вписать в url cat_selected=1 , ети значения из колонки id модели Category
-        # cat_selected - ето значение из колонки cat в модели Women
-        context["cat_selected"] = cat.pk
-        return context
+        # # cat_selected атрибут который можна вписать в url cat_selected=1 , ети значения из колонки id модели Category
+        # # cat_selected - ето значение из колонки cat в модели Women
+        # context["cat_selected"] = cat.pk
+        # return context
 
     def get_queryset(self):
         # self.kwargs["cat_slug"] ето значение которое мы передали в URL (название переменной определяеться в urls.py)
@@ -361,7 +375,7 @@ class WomenCategory(ListView):
 
 
 # НОВОЕ ПРЕДСТАВЛЕНИЕ показа постов по тегам от show_tag_postlist основанное на классе ListView
-class TagPostList(ListView):
+class TagPostList(DataMixin,ListView):
 
     template_name = "women/index.html"
     context_object_name = "posts"
@@ -372,10 +386,7 @@ class TagPostList(ListView):
 
         # self.kwargs["tag_slug"] ето значение которое мы передали в URL (название переменной определяеться в urls.py)
         tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
-
-        context["title"] = "Тег - " + tag.tag
-        context["menu"] = menu
-        context["cat_selected"] = None
+        self.get_mixin_context(context , title ="Тег - " + tag.tag , menu = menu  )
 
         return context
 
