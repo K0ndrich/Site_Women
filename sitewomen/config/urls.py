@@ -25,6 +25,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     # path - указивает путь url , index - название функции которая будет вызиваться
     path("admin/", admin.site.urls),
+    # авторизация пользователя
+    # namespace="users" береться уникальное пространство имен,которое храниться в url.py в переменной app_name
+    # пространстов служит для создание уникального пути не связаного с другими путями с аналогичными названиями
+    path("users/", include("users.urls", namespace="users")),
     # берет url из самого приложения (из указаного в второго файла) http://127.0.0.1:8000/
     path("women/", include("women.urls")),
     # берез из django debug toolbar

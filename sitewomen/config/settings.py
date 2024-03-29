@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # регистрация созданого приложения с названием women. Путь ->  women/apps/WomenConfig
     "women.apps.WomenConfig",
+    # авторизация и таблици с пользователями вынесенные в отдельное приложение
+    "users.apps.UsersConfig",
     # добавление сторонего пакета с разширениями
     "django_extensions",
     # добавление django debug toolbar
@@ -64,7 +66,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
-
+# указывате где храняться главные(начальные) пути для всего проекта
 ROOT_URLCONF = "config.urls"
 
 # настройка для шаблонизатора
