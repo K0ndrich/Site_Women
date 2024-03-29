@@ -15,6 +15,9 @@ class DataMixin:
     title_page = None
     cat_selected = None
 
+    # пагинация количество постов на одной странице
+    paginate_by = 4
+
     def __init__(self):
         if self.title_page:
             self.extra_context["title"] = self.title_page

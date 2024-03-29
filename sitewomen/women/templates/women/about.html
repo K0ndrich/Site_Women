@@ -3,11 +3,26 @@
 <!-- перемещаеться указаний ниже функционал в block, который лежит в базовом классе -->
 {%block content%}
 <h1>{{title}}</h1>
-<!-- ecntype определяеть что будет отправлять данные на сервер -->
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{form.as_p}}
-    <p><button type="submit">Отправить</button></p>
 
-</form>
+<!-- ecntype определяеть что будет отправлять данные на сервер
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <p><button type="submit">Отправить</button></p>
+        
+    </form> -->
+{% for item in page_obj %}
+<p>{{ item.pk }}: {{item.title}}</p>
+
+{% endfor %}
+
+<nav>
+    <ul>
+        {%for p in page_obj.paginator.page_range%}
+        <li>
+            <a href="?page={{ p }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
 {%endblock%}

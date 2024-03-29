@@ -33,6 +33,9 @@ from django.views.generic import (
 # добавляем свой миксин из файла с миксинами utils.py
 from .utils import DataMixin
 
+# добавление пагинатора
+from django.core.paginator import Paginator
+
 menu = [
     {"title": "О сайте", "url_name": "about"},
     {"title": "Добавить Статью", "url_name": "add_page"},
@@ -98,6 +101,7 @@ class WomenHome(DataMixin, ListView):
 
     title_page = "Главная Старница"
 
+
     cat_selected = 0
 
     # вместо extra_context используем метод Миксина
@@ -126,31 +130,37 @@ class WomenHome(DataMixin, ListView):
 
 # просто реализовуваем добавление данных в модель UploadFiles
 def about(request):
-    if request.method == "POST":
-        # создание заполненого обьекта формы, которая заполнена колекцией запроса пользователя(request.POST)
-        # и файлом, который отправил пользователь
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
 
-            # НЕ ИСПОЛЬЗУЕМ
-            # передаем внутрь функции обьявленой више файл, который отправил пользователь
-            # handle_uploaded_file(form.cleaned_data["file"])
-            # --------------------------------------------------------------------------
+    # ПРАКТИКОВАЛСЯ , ЧТОБ ПОЛЬЗОВАТЕЛЬ ДОБАВЛЯЛ ФОТО НА САЙТ
+    # if request.method == "POST":
+    #     # создание заполненого обьекта формы, которая заполнена колекцией запроса пользователя(request.POST)
+    #     # и файлом, который отправил пользователь
+    #     form = UploadFileForm(request.POST, request.FILES)
+    #     if form.is_valid():
 
-            # file ето значение name в классе UploadFileForm в forms.py
-            # создаем запись в модели UploadFiles
-            fp = UploadFiles(file=form.cleaned_data["file"])
-            fp.save()
-    else:
-        # создание обьекта формы , который пустой
-        form = UploadFileForm()
+    #         fp = UploadFiles(file=form.cleaned_data["file"])
+    #         fp.save()
+    # else:
+    #     # создание обьекта формы , который пустой
+    #     form = UploadFileForm()
 
-    data = {
-        "title": "О сайте",
-        "menu": menu,
-        "form": form,
-    }
-    return render(request, "women/about.html", data)
+    # data = {
+    #     "title": "О сайте",
+    #     "menu": menu,
+    #     "form": form,
+    # }
+
+    contact_list = Women.published.all()
+
+    # создание пагинатора , на каждой странице по 3 елемента
+    paginator = Paginator(contact_list, 3)
+    # пишем в URL ?page=1 или ?page=1
+    page_number = request.GET.get("page")
+    # берем текущую страницу по номеру page_number (1,2,3,4,5)
+    page_obj = paginator.get_page(page_number)
+    return render(
+        request, "women/about.html", {"title": "О сайте", "page_obj": page_obj}
+    )
 
 
 # СТАРОЕ представление для отображение одного поста на основе функции ----------------------------------------------------------------------------------------
@@ -375,7 +385,7 @@ class WomenCategory(DataMixin, ListView):
 
 
 # НОВОЕ ПРЕДСТАВЛЕНИЕ показа постов по тегам от show_tag_postlist основанное на классе ListView
-class TagPostList(DataMixin,ListView):
+class TagPostList(DataMixin, ListView):
 
     template_name = "women/index.html"
     context_object_name = "posts"
@@ -386,7 +396,7 @@ class TagPostList(DataMixin,ListView):
 
         # self.kwargs["tag_slug"] ето значение которое мы передали в URL (название переменной определяеться в urls.py)
         tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
-        self.get_mixin_context(context , title ="Тег - " + tag.tag , menu = menu  )
+        self.get_mixin_context(context, title="Тег - " + tag.tag, menu=menu)
 
         return context
 
