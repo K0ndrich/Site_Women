@@ -79,11 +79,14 @@ TEMPLATES = [
         # True - ищет по умолчанию шаблоны в config/women/templates/women/index.html
         "APP_DIRS": True,
         "OPTIONS": {
+            # контекстные процессоры
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # добавили свой один контексный процессор
+                "users.context_processors.get_women_context",
             ],
         },
     },

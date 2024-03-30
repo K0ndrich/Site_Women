@@ -36,12 +36,6 @@ from .utils import DataMixin
 # добавление пагинатора
 from django.core.paginator import Paginator
 
-menu = [
-    {"title": "О сайте", "url_name": "about"},
-    {"title": "Добавить Статью", "url_name": "add_page"},
-    {"title": "Обратная связь", "url_name": "contact"},
-    {"title": "Войти", "url_name": "login"},
-]
 
 
 # -----   СТАРОЕ ПРЕДАСТАВЛЕНИЕ index основаное на одной функции , новое представление ↓↓↓↓↓   ----------------------------------------------------------------------------------------
