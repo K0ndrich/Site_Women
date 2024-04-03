@@ -76,7 +76,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     success_url = reverse_lazy("home")
     login_url = "/women/"
     def form_valid(self,form):
-        # commit = False означает что не нжно ничего записывать в новосозданую запись в модели
+        # commit = False означает что не нeжно ничего записывать в новосозданую запись в модели
         w = form.save(commit=False)
         w.author = self.request.user
         return super().form_valid(form)
