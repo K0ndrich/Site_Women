@@ -176,3 +176,6 @@ LOGIN_REDIRECT_URL = "home"
 # LOGIN_URL = "/"
 # указываем адресс на который будет перенаправляються пользователь после выхода
 # LOGOUT_REDIRECT_URL = "home"
+
+# перенаправление на другой адресс при использовании @login_required
+LOGIN_URL = "users:login"
