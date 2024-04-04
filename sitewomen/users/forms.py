@@ -2,7 +2,9 @@ from typing import Any
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.views import PasswordChangeView , PasswordChangeDoneView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+
 
 class LoginUserForm(AuthenticationForm):
 
@@ -93,5 +95,16 @@ class ProfileUserForm(forms.ModelForm):
         }
 
 
-class UserPasswordChangeForm(forms.ModelForm):
-    
+class UserPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label="Старый Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
+
+    new_password1 = forms.CharField(
+        label="Новый Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
+
+    new_password2 = forms.CharField(
+        label="Подтверждение Пароля",
+        widget=forms.PasswordInput(attrs={"class": "form-input"}),
+    )

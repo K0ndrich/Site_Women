@@ -3,10 +3,19 @@ from django.db.models.base import Model as Model
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import LoginUserForm, RegisterUserForm, ProfileUserForm
+from .forms import (
+    LoginUserForm,
+    RegisterUserForm,
+    ProfileUserForm,
+    UserPasswordChangeForm,
+)
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.views import LoginView , PasswordChangeView , PasswordChangeDoneView
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+    PasswordChangeDoneView,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 
@@ -60,6 +69,16 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
+class UserPasswordChange(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy("users:password_change_done")
+    template_name = "users/password_change_form.html"
+
+class UserPasswordChangeDone(PasswordChangeDoneView):
+    template_name = "users/password_change_done.html"
+    title = "Пароль успешно изменен"
+
+    
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect(reverse("users:login"))
