@@ -180,3 +180,9 @@ LOGIN_REDIRECT_URL = "home"
 
 # перенаправление на другой адресс при использовании @login_required
 LOGIN_URL = "users:login"
+
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "users.authenticate.EmailAuthBackend",
+]

@@ -39,7 +39,7 @@ class WomenHome(DataMixin, ListView):
         return Women.published.all().select_related("cat")
 
 
-@login_required(login_url="/admin/")
+@login_required(login_url="/women/")
 def about(request):
 
     contact_list = Women.published.all()
