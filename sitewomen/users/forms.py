@@ -1,6 +1,6 @@
 from typing import Any
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
 
 
@@ -18,10 +18,16 @@ class LoginUserForm(AuthenticationForm):
         fields = ["username", "password"]
 
 
-class RegisterUserForm(forms.ModelForm):
-    username = forms.CharField(label="Логин")
-    password = forms.CharField(label="Пароль", widget=forms.PasswordInput())
-    password2 = forms.CharField(label="Повтор Пароля", widget=forms.PasswordInput())
+class RegisterUserForm(UserCreationForm):
+    username = forms.CharField(
+        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
+    )
+    password1 = forms.CharField(
+        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
+    password2 = forms.CharField(
+        label="Повтор Пароля", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
 
     # Meta класс в формах служит для связивания с моделью в какую мы будем записывать данные
     class Meta:
@@ -33,29 +39,33 @@ class RegisterUserForm(forms.ModelForm):
             "email",
             "first_name",
             "last_name",
-            "password",
+            "password1",
             "password2",
         ]
+
         # переопредиляем названия для наших полей
         labels = {
-            "username": "UserName",
             "email": "Е-mail",
             "first_name": "Имя",
             "last_name": "Фамилия",
-            "password": "Пароль",
-            "password2": "Повтор Пароля",
+        }
+        widgets = {
+            "email": forms.TextInput(attrs={"class": "form-input"}),
+            "first_name": forms.TextInput(attrs={"class": "form-input"}),
+            "last_name": forms.TextInput(attrs={"class": "form-input"}),
         }
 
+    # clean_название поля для проверки значений отдельных полей формы
     def clean_password2(self):
         cd = self.cleaned_data
-        if cd["password"] != cd["password2"]:
+        if cd["password1"] != cd["password2"]:
             raise forms.ValidationError("Пароли не Совпадают")
         else:
-            return cd["password"]
+            return cd["password1"]
 
     def clean_email(self):
         email = self.cleaned_data["email"]
-        if get_user_model().filter(email=email).exists():
-            raise forms.ValidationError("Такое e-mail уже существует")
+        if get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError("Такое E-mail уже существует")
         else:
             return email
