@@ -2,7 +2,7 @@ from typing import Any
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.views import PasswordChangeView , PasswordChangeDoneView
 
 class LoginUserForm(AuthenticationForm):
 
@@ -69,3 +69,29 @@ class RegisterUserForm(UserCreationForm):
             raise forms.ValidationError("Такое E-mail уже существует")
         else:
             return email
+
+
+class ProfileUserForm(forms.ModelForm):
+    username = forms.CharField(
+        disabled=True,
+        label="Логин",
+        widget=forms.TextInput(attrs={"class": "form-input"}),
+    )
+    email = forms.CharField(
+        disabled=True,
+        label="E-mail",
+        widget=forms.TextInput(attrs={"class": "form-input"}),
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "email", "first_name", "last_name"]
+        labels = {"first_name": "Имя", "last_name": "Фамилия"}
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-input"}),
+            "last_name": forms.TextInput(attrs={"class": "form-input"}),
+        }
+
+
+class UserPasswordChangeForm(forms.ModelForm):
+    
