@@ -4,9 +4,10 @@
 # python - название , : - версия (у нас последняя)
 FROM python:3.12-bullseye
 
+RUN mkdir site_women
 
 # задает рабочую директорию, внутри которой будут выполняться инструкции ниже  (внутри doker image)
-WORKDIR /usr/src/app
+WORKDIR sitewomen
 
 # команда COPY копирует файлы
 # COPY откуда(из локального проекта) - куда (в doker image)
