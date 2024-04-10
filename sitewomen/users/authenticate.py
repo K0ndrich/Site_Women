@@ -10,6 +10,7 @@ class EmailAuthBackend(BaseBackend):
 
         try:
             user = user_model.objects.get(email=username)
+            # проверяте пароль на совпадение с етим пользователем в базе
             if user.check_password(password):
                 return user
             else:
