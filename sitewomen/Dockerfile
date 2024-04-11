@@ -2,7 +2,7 @@
 
 # берем docker image(образ) на основе которого будет работать наше приложение
 # python - название , : - версия (у нас последняя)
-FROM python:3.12-bullseye
+FROM python:3.12.3-slim
 
 RUN mkdir site_women
 
