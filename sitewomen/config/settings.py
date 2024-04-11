@@ -191,3 +191,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # указываем свою новую модель для сохранения аккаунтов пользователей
 AUTH_USER_MODEL = "users.User"
+
+# указываме картинку, чтоб пользоваться ею в коде.
+# при изменение не нужно менять все поля, нужно только одну ету
+DEFAULT_AUTO_IMAGE = MEDIA_URL + "users/default.png"

@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
+import datetime
 
 
 class LoginUserForm(AuthenticationForm):
@@ -74,6 +75,7 @@ class RegisterUserForm(UserCreationForm):
 
 
 class ProfileUserForm(forms.ModelForm):
+    # поля, которые мы создаем самостоятельно
     username = forms.CharField(
         disabled=True,
         label="Логин",
@@ -84,10 +86,18 @@ class ProfileUserForm(forms.ModelForm):
         label="E-mail",
         widget=forms.TextInput(attrs={"class": "form-input"}),
     )
+    this_year = datetime.date.today().year
+    # будет показываться поле для указания даты рождения с указаным диапазоном range
+    date_birth = forms.DateField(
+        widget=forms.SelectDateWidget(
+            years=tuple(range(this_year - 100, this_year - 5))
+        )
+    )
 
     class Meta:
         model = get_user_model()
-        fields = ["username", "email", "first_name", "last_name"]
+        # поля, которые будут выводиться на текущей странице
+        fields = ["photo", "username", "email", "date_birth", "first_name", "last_name"]
         labels = {"first_name": "Имя", "last_name": "Фамилия"}
         widgets = {
             "first_name": forms.TextInput(attrs={"class": "form-input"}),
