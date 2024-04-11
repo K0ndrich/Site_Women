@@ -23,13 +23,21 @@ class LoginUserForm(AuthenticationForm):
 
 class RegisterUserForm(UserCreationForm):
     username = forms.CharField(
-        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
+        label="Логин",
+        validators=[],
+        widget=forms.TextInput(attrs={"class": "form-input"}),
     )
     password1 = forms.CharField(
-        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+        label="Пароль",
+        validators=[],
+        widget=forms.PasswordInput(
+            attrs={"class": "form-input"},
+        ),
     )
     password2 = forms.CharField(
-        label="Повтор Пароля", widget=forms.PasswordInput(attrs={"class": "form-input"})
+        label="Повтор Пароля",
+        validators=[],
+        widget=forms.PasswordInput(attrs={"class": "form-input"}),
     )
 
     # Meta класс в формах служит для связивания с моделью в какую мы будем записывать данные
@@ -57,6 +65,8 @@ class RegisterUserForm(UserCreationForm):
             "first_name": forms.TextInput(attrs={"class": "form-input"}),
             "last_name": forms.TextInput(attrs={"class": "form-input"}),
         }
+
+    
 
     # clean_название поля для проверки значений отдельных полей формы
     def clean_password2(self):

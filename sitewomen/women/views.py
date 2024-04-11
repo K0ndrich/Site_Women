@@ -21,9 +21,9 @@ from django.views.generic import (
 )
 from .utils import DataMixin
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib.auth.decorators import login_required , permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import 
 
 class WomenHome(DataMixin, ListView):
 
@@ -69,25 +69,32 @@ class ShowPost(DataMixin, DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(LoginRequiredMixin, DataMixin, CreateView):
+# LoginRequiredMixin - разрешает пользоваться предсталением только авторизавным пользователям
+# PermissionRequiredMixin - разрешает пользоваться предсталением только пользователям у которых есть разрешение
+class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     title_page = "Добавление Статьи"
     template_name = "women/addpage.html"
     success_url = reverse_lazy("home")
     login_url = "/women/"
-    def form_valid(self,form):
+    # указываем каким разрешение нужно обладать пользователю, чтоб пользоваться текущим предсталением
+    # <названеи приложения> . <действие(разрешение)> <название таблици>
+    permission_required = "women.add_women"
+
+    def form_valid(self, form):
         # commit = False означает что не нeжно ничего записывать в новосозданую запись в модели
         w = form.save(commit=False)
         w.author = self.request.user
         return super().form_valid(form)
 
 
-class UpdatePage(DataMixin, UpdateView):
+class UpdatePage(PermissionRequiredMixin, DataMixin, UpdateView):
     model = Women
     fields = ["title", "slug", "content", "photo", "is_published", "cat"]
     success_url = reverse_lazy("home")
     template_name = "women/addpage.html"
     title_page = "Редактирование Статьи"
+    permission_required = "women.change_women"
 
 
 class DeletePage(DataMixin, DeleteView):
@@ -97,7 +104,8 @@ class DeletePage(DataMixin, DeleteView):
     template_name = "women/addpage.html"
     title_page = "Удаление Статьи"
 
-
+# установка ограничений на представлении на основе функции
+@permission_required(perm="women.view_women",raise_exception=True)
 def contact(request):
     return HttpResponse("Обратная Связь")
 

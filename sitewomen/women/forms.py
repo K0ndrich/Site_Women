@@ -3,12 +3,13 @@ from django import forms
 from .models import Category, Husband, Women
 
 # добавление других валидаторов для проверки значений, которые ввел пользователь
-from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator, BaseValidator
 
 from django.utils.deconstruct import deconstructible
 from django.core.exceptions import ValidationError
 
 
+# свой валидатор для проверки вписаного текста в поле формы
 @deconstructible
 class RussianValidator:
     ALLOWED_CHARS = (
@@ -26,8 +27,6 @@ class RussianValidator:
     def __call__(self, value, *args, **kwargs):
         if not (set(value) <= set(self.ALLOWED_CHARS)):
             raise ValidationError(self.message, code=self.code)
-
-
 
 
 class AddPostForm(forms.ModelForm):
