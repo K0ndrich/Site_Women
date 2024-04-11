@@ -23,7 +23,7 @@ from .utils import DataMixin
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required , permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.decorators import 
+
 
 class WomenHome(DataMixin, ListView):
 
@@ -118,13 +118,11 @@ class WomenCategory(DataMixin, ListView):
 
     template_name = "women/index.html"
     context_object_name = "posts"
-
     allow_empty = False
 
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-
         cat = context["posts"][0].cat
         return self.get_mixin_context(
             context, title="Категория - " + cat.name, cat_selected=cat.pk

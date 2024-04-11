@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 
 {% block breadcrumbs%}
-<!-- Теги  -->
+<!-- perm хранить внутри себя текущего пользователя и его разширения -->
+{% if perms.women.change_women %}
+<p ><a href="{% url 'edit_page' post.slug %}">Редактировать</a></p>
+{% endif %}
 <!-- берем все теги указаного поста через менедже tags, который указали в related_name -->
 <!-- with дает псевдоним -->
 {% with post.tags.all as tags %}
