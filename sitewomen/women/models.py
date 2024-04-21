@@ -12,7 +12,9 @@ class PublishedManager(models.Manager):
 
 class Women(models.Model):
 
+    # переопредиление значений, уже не нужно вписывать сами значения, а нужно вписывать ключевые слова
     class Status(models.IntegerChoices):
+        # DRAFT - ключевое слово , 0 - значение его , "Черновик" - описание, которое будет отображаться в админке
         DRAFT = 0, "Черновик"
         PUBLISHED = 1, "Опубликовано"
 
@@ -70,7 +72,13 @@ class Women(models.Model):
         related_name="wuman",
         verbose_name="Муж",
     )
-    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL , related_name="posts" , null=True , default=None)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        related_name="posts",
+        null=True,
+        default=None,
+    )
 
     def __str__(self):
         return self.title
