@@ -21,7 +21,7 @@ from django.views.generic import (
 )
 from .utils import DataMixin
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required , permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
@@ -104,8 +104,9 @@ class DeletePage(DataMixin, DeleteView):
     template_name = "women/addpage.html"
     title_page = "Удаление Статьи"
 
+
 # установка ограничений на представлении на основе функции
-@permission_required(perm="women.view_women",raise_exception=True)
+@permission_required(perm="women.view_women", raise_exception=True)
 def contact(request):
     return HttpResponse("Обратная Связь")
 
